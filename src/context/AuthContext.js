@@ -121,18 +121,12 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
-  const value = useMemo(
-    () => ({
+  const value = useMemo(() => {
+    return {
       user,
-      token,
-      shopId,
-      isInitializing,
-      login,
-      setShopId,
-      logout,
-    }),
-    [user, token, shopId, isInitializing]
-  );
+      login
+    };
+  }, [user, login]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

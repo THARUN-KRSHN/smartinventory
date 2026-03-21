@@ -51,9 +51,4 @@ api.interceptors.response.use(
   }
 );
 
-export const apiRequest = async (config) => {
-  const response = await api(config);
-  return response.data;
-};
-
 export default api;
