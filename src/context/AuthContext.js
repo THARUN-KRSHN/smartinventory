@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, useCallback } from "react";
 import { apiRequest } from "../api/api";
 
 export const AuthContext = createContext(null);
@@ -42,8 +42,8 @@ export const AuthProvider = ({ children }) => {
   const [shopId, setShopIdState] = useState(getStoredShopId);
   const [isInitializing, setIsInitializing] = useState(true);
 
-  const setShopId = (nextShopId) => {
-    if (nextShopId === undefined || nextShopId === null || nextShopId === "") {
+  const setShopId = useCallback((nextShopId) => {
+    if (!nextShopId) {
       setShopIdState(null);
       localStorage.removeItem("shop_id");
       return;
@@ -52,9 +52,10 @@ export const AuthProvider = ({ children }) => {
     const normalizedShopId = String(nextShopId);
     setShopIdState(normalizedShopId);
     localStorage.setItem("shop_id", normalizedShopId);
-  };
+  }, []);
 
-  const login = ({ user: nextUser, token: nextToken }) => {
+  // ✅ FIXED login (now stable)
+  const login = useCallback(({ user: nextUser, token: nextToken }) => {
     setUser(nextUser || null);
     setToken(nextToken || null);
 
@@ -71,15 +72,15 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem("role");
       setShopId(null);
     }
-  };
+  }, [setShopId]);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setUser(null);
     setToken(null);
     setShopIdState(null);
     clearStoredAuth();
     window.location.href = "/login";
-  };
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -119,16 +120,23 @@ export const AuthProvider = ({ children }) => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [setShopId]);
 
-  const value = useMemo(() => {
-    return {
-      user,
-      login
-    };
-  }, [user, login]);
+  // ✅ FIXED dependency issue here
+  const value = useMemo(() => ({
+    user,
+    login,
+    logout,
+    shopId,
+    token,
+    isInitializing
+  }), [user, login, logout, shopId, token, isInitializing]);
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {

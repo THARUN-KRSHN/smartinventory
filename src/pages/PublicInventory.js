@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import { apiRequest } from '../api/api';
 
 const BASE_URL = "https://db-project-backend-2ull.onrender.com";
 
