@@ -16,7 +16,7 @@ import StaffManagement from "./pages/StaffManagement";
 import AdminLayout from "./components/AdminLayout";
 import AdminDashboard from "./pages/AdminDashboard";
 import PublicInventory from "./pages/PublicInventory";
-import StaffPanel from "./pages/StaffPanel";
+import Billing from "./pages/Billing";
 
 function LogoutButton() {
   const { user, logout } = useContext(AuthContext);
@@ -37,7 +37,7 @@ function AppContent() {
   const location = useLocation();
   const isLandingPage = location.pathname === '/';
   const isAuthPage = ['/login', '/register', '/staff-login'].includes(location.pathname);
-  const isAdminPage = ['/dashboard', '/inventory', '/staff', '/settings'].includes(location.pathname);
+  const isAdminPage = ['/dashboard', '/inventory', '/staff', '/settings', '/billing'].includes(location.pathname);
   const hideNav = isLandingPage || isAuthPage || isAdminPage;
 
   useEffect(() => {
@@ -89,13 +89,16 @@ function AppContent() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/public/shop/:shop_name/inventory" element={<PublicInventory />} />
           
-          {/* ADMIN ROUTES */}
-          <Route path="/dashboard" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminDashboard /></AdminLayout></ProtectedRoute>} />
-          <Route path="/inventory" element={<ProtectedRoute requiredRole="admin"><AdminLayout><Inventory /></AdminLayout></ProtectedRoute>} />
-          <Route path="/staff" element={<ProtectedRoute requiredRole="admin"><AdminLayout><StaffManagement /></AdminLayout></ProtectedRoute>} />
-          <Route path="/settings" element={<ProtectedRoute requiredRole="admin"><AdminLayout><Settings /></AdminLayout></ProtectedRoute>} />
+          {/* AUTHENTICATED SHARED ROUTES */}
+          <Route path="/inventory" element={<ProtectedRoute><AdminLayout><Inventory /></AdminLayout></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><AdminLayout><Settings /></AdminLayout></ProtectedRoute>} />
           
-          <Route path="/billing" element={<StaffPanel />} />
+          {/* ADMIN EXCLUSIVE ROUTES */}
+          <Route path="/dashboard" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminDashboard /></AdminLayout></ProtectedRoute>} />
+          <Route path="/staff" element={<ProtectedRoute requiredRole="admin"><AdminLayout><StaffManagement /></AdminLayout></ProtectedRoute>} />
+          
+          {/* STAFF EXCLUSIVE ROUTES */}
+          <Route path="/billing" element={<ProtectedRoute requiredRole="staff"><AdminLayout><Billing /></AdminLayout></ProtectedRoute>} />
         </Routes>
       </main>
     </>

@@ -141,11 +141,9 @@ const Inventory = () => {
            <h2 className="display-6 fw-bold mb-0" style={{ letterSpacing: "-1px" }}>Inventory</h2>
            <p className="text-secondary mt-1">Manage and track your products.</p>
         </div>
-        {isAdmin && (
-          <button type="button" className="btn btn-primary rounded-pill px-4 fw-medium shadow-sm d-flex align-items-center" onClick={openAddModal}>
-            <Plus size={18} className="me-2" /> Add Product
-          </button>
-        )}
+        <button type="button" className="btn btn-primary rounded-pill px-4 fw-medium shadow-sm d-flex align-items-center" onClick={openAddModal}>
+          <Plus size={18} className="me-2" /> Add Product
+        </button>
       </div>
 
       {errorMessage && <div className="alert alert-danger shadow-sm border-0 rounded-4">{errorMessage}</div>}
@@ -165,13 +163,13 @@ const Inventory = () => {
                   <th className="py-3 text-uppercase text-secondary" style={{ fontSize: "0.8rem", letterSpacing: "1px" }}>Price</th>
                   <th className="py-3 text-uppercase text-secondary" style={{ fontSize: "0.8rem", letterSpacing: "1px" }}>Stock</th>
                   <th className="py-3 text-uppercase text-secondary" style={{ fontSize: "0.8rem", letterSpacing: "1px" }}>Status</th>
-                  {isAdmin && <th className="pe-4 py-3 text-end text-uppercase text-secondary" style={{ fontSize: "0.8rem", letterSpacing: "1px" }}>Actions</th>}
+                  <th className="pe-4 py-3 text-end text-uppercase text-secondary" style={{ fontSize: "0.8rem", letterSpacing: "1px" }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {products.length === 0 ? (
                   <tr>
-                    <td colSpan={isAdmin ? 6 : 5} className="text-center text-muted py-5">
+                    <td colSpan={6} className="text-center text-muted py-5">
                       <div className="d-flex flex-column align-items-center justify-content-center">
                         <div className="bg-light p-4 rounded-circle mb-3"><Package size={32} className="text-secondary" /></div>
                         <h5 className="fw-bold text-dark">No products found</h5>
@@ -197,16 +195,16 @@ const Inventory = () => {
                             {isLowStock ? "Low Stock" : "In Stock"}
                           </span>
                         </td>
-                        {isAdmin && (
-                          <td className="pe-4 text-end">
-                            <button className="btn btn-sm btn-light rounded-circle me-2 p-2 shadow-sm" onClick={() => openEditModal(product)}>
-                              <Edit2 size={16} className="text-primary" />
-                            </button>
+                        <td className="pe-4 text-end">
+                          <button className="btn btn-sm btn-light rounded-circle me-2 p-2 shadow-sm" onClick={() => openEditModal(product)}>
+                            <Edit2 size={16} className="text-primary" />
+                          </button>
+                          {isAdmin && (
                             <button className="btn btn-sm btn-light rounded-circle p-2 shadow-sm" onClick={() => handleDelete(id)} disabled={deleteId === id}>
                               <Trash2 size={16} className={deleteId === id ? "text-muted" : "text-danger"} />
                             </button>
-                          </td>
-                        )}
+                          )}
+                        </td>
                       </motion.tr>
                     );
                   })

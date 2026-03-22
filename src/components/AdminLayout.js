@@ -22,18 +22,24 @@ const AdminLayout = ({ children }) => {
   const [showSetupModal, setShowSetupModal] = useState(false);
   const [setupForm, setSetupForm] = useState({ shop_name: "", category: "", show_price: true, show_stock: true });
   const [setupSaving, setSetupSaving] = useState(false);
+  const [userRole, setUserRole] = useState("admin");
 
   useEffect(() => {
     try {
       const shopId = localStorage.getItem("shop_id");
-      if (!shopId || shopId === "null" || shopId === "undefined") {
+      const role = localStorage.getItem("role") || localStorage.getItem("userRole") || "admin";
+      setUserRole(role.toLowerCase());
+
+      if (role.toLowerCase() === "admin" && (!shopId || shopId === "null" || shopId === "undefined")) {
         setShowSetupModal(true);
       }
 
       const userStr = localStorage.getItem("user");
       if (userStr) {
         const user = JSON.parse(userStr);
-        setShopName(user?.full_name ? `${user.full_name}'s Portal` : "Admin Portal");
+        // By default, assume the shop name might be passed in user object or fetched.
+        // If they enter Shop details, it overrides this.
+        setShopName(user?.shop_name || "Smart Inventory");
       }
     } catch (e) {}
   }, [location.pathname]);
@@ -66,12 +72,20 @@ const AdminLayout = ({ children }) => {
     }
   };
 
-  const navItems = [
+  const adminNavItems = [
     { label: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={20} /> },
     { label: "Inventory", path: "/inventory", icon: <Package size={20} /> },
     { label: "Staff Creation", path: "/staff", icon: <Users size={20} /> },
     { label: "Settings", path: "/settings", icon: <Settings size={20} /> },
   ];
+
+  const staffNavItems = [
+    { label: "Billing", path: "/billing", icon: <LayoutDashboard size={20} /> },
+    { label: "Inventory", path: "/inventory", icon: <Package size={20} /> },
+    { label: "Settings", path: "/settings", icon: <Settings size={20} /> }
+  ];
+
+  const navItems = userRole === "staff" ? staffNavItems : adminNavItems;
 
   const SidebarContent = () => (
     <div className="d-flex flex-column h-100 p-4" style={{ width: "260px", backgroundColor: "#ffffff", borderRight: "1px solid #f0f0f0" }}>
@@ -82,7 +96,9 @@ const AdminLayout = ({ children }) => {
         </div>
         <div>
           <h5 className="mb-0 fw-bold text-truncate" style={{ maxWidth: "160px" }}>{shopName}</h5>
-          <small className="text-muted" style={{ fontSize: "0.7rem", letterSpacing: "1px" }}>SMART INVENTORY</small>
+          <small className="text-muted fw-bold" style={{ fontSize: "0.7rem", letterSpacing: "1px" }}>
+            {userRole === "admin" ? "ADMIN PLATFORM" : "STAFF PORTAL"}
+          </small>
         </div>
       </div>
 
