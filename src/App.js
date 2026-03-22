@@ -9,6 +9,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import StaffLogin from "./pages/StaffLogin";
 import ShopSetup from "./pages/ShopSetup";
 import AdminDashboard from "./pages/AdminDashboard";
 import PublicInventory from "./pages/PublicInventory";
@@ -32,6 +33,8 @@ function LogoutButton() {
 function AppContent() {
   const location = useLocation();
   const isLandingPage = location.pathname === '/';
+  const isAuthPage = ['/login', '/register', '/staff-login'].includes(location.pathname);
+  const hideNav = isLandingPage || isAuthPage;
 
   useEffect(() => {
     fetch("http://localhost:8000/public/shops").catch(() => {});
@@ -39,7 +42,7 @@ function AppContent() {
 
   return (
     <>
-      {!isLandingPage && (
+      {!hideNav && (
         <nav className="navbar navbar-expand-lg navbar-dark sticky-top py-3">
           <div className="container">
             {/* Updated Logo Section */}
@@ -74,10 +77,11 @@ function AppContent() {
         </nav>
       )}
 
-      <main className={isLandingPage ? "" : "container py-5"}>
+      <main className={hideNav ? "" : "container py-5"}>
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/staff-login" element={<StaffLogin />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/setup-shop" element={<ShopSetup />} />
           <Route path="/public/shop/:shop_name/inventory" element={<PublicInventory />} />

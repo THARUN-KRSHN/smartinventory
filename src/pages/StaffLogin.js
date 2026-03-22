@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { apiRequest } from "../api/api";
 import AuthLayout from "../components/AuthLayout";
-import { AlertTriangle, Lock } from "lucide-react";
+import { AlertTriangle, Users } from "lucide-react";
 
-const LoginPage = () => {
+const StaffLogin = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -60,23 +60,23 @@ const LoginPage = () => {
     <AuthLayout
       leftTitle={
         <>
-          Welcome <br />
-          <span style={{ fontStyle: "italic" }}>Back</span>
+          Staff <br />
+          <span style={{ fontStyle: "italic" }}>Portal</span>
         </>
       }
-      leftSubtitle={<>Manage your smart inventory.<br/>Everything you need, right here.</>}
+      leftSubtitle={<>Access your daily tasks.<br/>Streamline your workflow.</>}
       topRightLinks={[
+        { label: "Admin Login", to: "/login" },
         { label: "Register Shop", to: "/register" },
-        { label: "Staff Login", to: "/staff-login" },
       ]}
     >
       <div className="mb-5">
         <h2 className="display-6 fw-bold mb-2 d-flex align-items-center">
-          Admin Login <Lock className="ms-3 text-secondary" size={24} />
+          Staff Login <Users className="ms-3 text-secondary" size={24} />
         </h2>
-        <p className="text-secondary opacity-75 mb-0 font-monospace small">Enter your credentials to access your dashboard.</p>
-        <div className="alert alert-secondary border-0 bg-light mt-3 mb-0 rounded-3 py-2 px-3 small d-flex align-items-center">
-          If you are staff, use the Staff Login portal.
+        <p className="text-secondary opacity-75 mb-0 font-monospace small">Enter your credentials to access the billing portal.</p>
+        <div className="alert alert-info border-0 bg-light-blue text-primary mt-3 mb-0 rounded-3 py-2 px-3 small d-flex align-items-center">
+          Login the staff using email and password created by admin.
         </div>
       </div>
 
@@ -92,7 +92,7 @@ const LoginPage = () => {
             id="email"
             type="email"
             className="form-control form-control-lg border-0 bg-light rounded-pill px-4 fs-6 py-3"
-            placeholder="business email"
+            placeholder="staff email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -131,13 +131,11 @@ const LoginPage = () => {
       </form>
       
       <div className="text-center mt-5">
-        <span className="text-muted small">Don't have an account? </span>
-        <Link to="/register" className="text-dark fw-bold text-decoration-none small">
-          Register Shop
-        </Link>
+        <span className="text-muted small">Need an account? </span>
+        <span className="text-muted small fw-bold">Contact your Shop Admin</span>
       </div>
     </AuthLayout>
   );
 };
 
-export default LoginPage;
+export default StaffLogin;
