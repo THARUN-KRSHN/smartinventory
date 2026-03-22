@@ -39,7 +39,7 @@ const LoginPage = () => {
       }
 
       if (user.role === "admin") {
-        navigate(user.shop_id === null ? "/setup-shop" : "/dashboard");
+        navigate("/dashboard");
       } else if (user.role === "staff") {
         navigate("/billing");
       } else {

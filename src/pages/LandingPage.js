@@ -1,11 +1,9 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { apiRequest } from "../api/api";
 import { motion, useScroll, useTransform } from "framer-motion";
 import {
   ArrowRight,
-  BarChart3,
-  Boxes,
   CheckCircle2,
   ChevronDown,
   Globe2,
@@ -31,9 +29,8 @@ const LandingNav = () => {
 
   return (
     <nav
-      className={`navbar navbar-expand-lg fixed-top transition-all ${
-        scrolled ? "bg-white shadow-sm py-2" : "bg-transparent py-4"
-      }`}
+      className={`navbar navbar-expand-lg fixed-top transition-all ${scrolled ? "bg-white shadow-sm py-2" : "bg-transparent py-4"
+        }`}
       style={{ transition: "all 0.3s ease", zIndex: 1000 }}
     >
       <div className="container">
@@ -52,7 +49,6 @@ const LandingNav = () => {
             style={{
               color: scrolled ? "var(--primary)" : "#ffffff",
               letterSpacing: "1px",
-              transition: "color 0.3s ease",
             }}
           >
             SMART
@@ -62,7 +58,6 @@ const LandingNav = () => {
             style={{
               color: scrolled ? "#1a1a1a" : "#ffffff",
               letterSpacing: "1px",
-              transition: "color 0.3s ease",
             }}
           >
             INVENTORY
@@ -202,7 +197,7 @@ const LandingPage = () => {
               <motion.p variants={fadeUp} className="h4 fw-light mb-5" style={{ opacity: 0.9 }}>
                 crafted for the superYou
               </motion.p>
-              
+
               <motion.div variants={fadeUp} className="d-flex flex-column flex-sm-row justify-content-center gap-3">
                 <Link to="/register" className="btn-super text-decoration-none">
                   Get Started
@@ -216,22 +211,7 @@ const LandingPage = () => {
         </div>
 
         {/* Decorative background elements */}
-        <motion.div
-          animate={{ y: [0, -20, 0], rotate: [0, 5, 0] }}
-          transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
-          className="position-absolute d-none d-lg-block"
-          style={{ top: "20%", left: "10%", opacity: 0.2 }}
-        >
-          <Boxes size={120} />
-        </motion.div>
-        <motion.div
-          animate={{ y: [0, 30, 0], rotate: [0, -10, 0] }}
-          transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
-          className="position-absolute d-none d-lg-block"
-          style={{ bottom: "15%", right: "10%", opacity: 0.2 }}
-        >
-          <BarChart3 size={150} />
-        </motion.div>
+
       </section>
 
       {/* 2. THE PROBLEM */}
@@ -289,7 +269,7 @@ const LandingPage = () => {
         <div className="container text-center mb-5">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
             <h6 className="text-uppercase fw-bold mb-3" style={{ color: "var(--primary)" }}>What We're Solving</h6>
-            <h2 className="display-5 fw-bold mb-4">Redefining the way you <br/>manage stock.</h2>
+            <h2 className="display-5 fw-bold mb-4" style={{ color: "black" }}>Redefining the way you <br />manage stock.</h2>
             <p className="lead text-muted mx-auto" style={{ maxWidth: "700px" }}>
               We transform chaotic backrooms into streamlined workflows. Total visibility, intelligent alerts, and multi-tenant capabilities built directly into one super platform.
             </p>
@@ -346,7 +326,7 @@ const LandingPage = () => {
           ) : error ? (
             <div className="alert alert-danger text-center max-w-md mx-auto">{error}</div>
           ) : shops.length === 0 ? (
-             <div className="alert alert-info text-center">No shops are available at the moment.</div>
+            <div className="alert alert-info text-center">No shops are available at the moment.</div>
           ) : (
             <motion.div
               initial="hidden"
@@ -360,13 +340,13 @@ const LandingPage = () => {
                   <div className="rounded-card card h-100 shadow-sm border-0">
                     <div className="card-body p-4 d-flex flex-column text-center">
                       <div className="mx-auto mb-4 bg-light p-4 rounded-circle">
-                         <Store size={40} className="text-primary" />
+                        <Store size={40} className="text-primary" />
                       </div>
                       <h4 className="card-title fw-bold mb-2">{shop.shop_name}</h4>
                       <p className="card-text text-muted mb-4">
                         {shop.category || "General Store"}
                       </p>
-                      
+
                       <button
                         className="btn btn-outline-primary rounded-pill mt-auto w-100 d-flex align-items-center justify-content-center gap-2"
                         onClick={() => navigate(`/public/shop/${encodeURIComponent(shop.shop_name)}/inventory`)}
@@ -435,19 +415,19 @@ const LandingPage = () => {
               <h6 className="fw-bold mb-4 text-uppercase">Resources</h6>
               <ul className="list-unstyled">
                 <li className="mb-2"><a href="#faq" className="text-secondary text-decoration-none hover-white">FAQ</a></li>
-                <li className="mb-2"><a href="#" className="text-secondary text-decoration-none hover-white">Support</a></li>
-                <li className="mb-2"><a href="#" className="text-secondary text-decoration-none hover-white">Documentation</a></li>
+                <li className="mb-2"><a href="#!" className="text-secondary text-decoration-none hover-white">Support</a></li>
+                <li className="mb-2"><a href="#!" className="text-secondary text-decoration-none hover-white">Documentation</a></li>
               </ul>
             </div>
             <div className="col-lg-2">
               <h6 className="fw-bold mb-4 text-uppercase">Legal</h6>
               <ul className="list-unstyled">
-                <li className="mb-2"><a href="#" className="text-secondary text-decoration-none hover-white">Privacy Policy</a></li>
-                <li className="mb-2"><a href="#" className="text-secondary text-decoration-none hover-white">Terms of Servcie</a></li>
+                <li className="mb-2"><a href="#!" className="text-secondary text-decoration-none hover-white">Privacy Policy</a></li>
+                <li className="mb-2"><a href="#!" className="text-secondary text-decoration-none hover-white">Terms of Servcie</a></li>
               </ul>
             </div>
           </div>
-          
+
           <div className="row align-items-center">
             <div className="col-md-6 mb-4 mb-md-0">
               <h1 className="display-2 fw-bolder mb-0" style={{ color: "#333333", letterSpacing: "-2px" }}>
@@ -456,14 +436,15 @@ const LandingPage = () => {
             </div>
             <div className="col-md-6 text-md-end">
               <p className="text-secondary mb-0">
-                Copyright © {new Date().getFullYear()} Smart Inventory Private Limited.<br/>All rights reserved.
+                Copyright © {new Date().getFullYear()} Smart Inventory Private Limited.<br />All rights reserved.
               </p>
             </div>
           </div>
         </div>
-        
+
         {/* Simple hover effect for footer links */}
-        <style dangerouslySetInnerHTML={{__html: `
+        <style dangerouslySetInnerHTML={{
+          __html: `
           .hover-white { transition: color 0.2s ease; }
           .hover-white:hover { color: #ffffff !important; }
         `}} />

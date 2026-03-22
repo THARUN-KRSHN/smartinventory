@@ -10,7 +10,10 @@ import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import StaffLogin from "./pages/StaffLogin";
-import ShopSetup from "./pages/ShopSetup";
+import Settings from "./pages/Settings";
+import Inventory from "./pages/Inventory";
+import StaffManagement from "./pages/StaffManagement";
+import AdminLayout from "./components/AdminLayout";
 import AdminDashboard from "./pages/AdminDashboard";
 import PublicInventory from "./pages/PublicInventory";
 import StaffPanel from "./pages/StaffPanel";
@@ -34,7 +37,8 @@ function AppContent() {
   const location = useLocation();
   const isLandingPage = location.pathname === '/';
   const isAuthPage = ['/login', '/register', '/staff-login'].includes(location.pathname);
-  const hideNav = isLandingPage || isAuthPage;
+  const isAdminPage = ['/dashboard', '/inventory', '/staff', '/settings'].includes(location.pathname);
+  const hideNav = isLandingPage || isAuthPage || isAdminPage;
 
   useEffect(() => {
     fetch("http://localhost:8000/public/shops").catch(() => {});
@@ -83,17 +87,13 @@ function AppContent() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/staff-login" element={<StaffLogin />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/setup-shop" element={<ShopSetup />} />
           <Route path="/public/shop/:shop_name/inventory" element={<PublicInventory />} />
           
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute requiredRole="admin">
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
+          {/* ADMIN ROUTES */}
+          <Route path="/dashboard" element={<ProtectedRoute requiredRole="admin"><AdminLayout><AdminDashboard /></AdminLayout></ProtectedRoute>} />
+          <Route path="/inventory" element={<ProtectedRoute requiredRole="admin"><AdminLayout><Inventory /></AdminLayout></ProtectedRoute>} />
+          <Route path="/staff" element={<ProtectedRoute requiredRole="admin"><AdminLayout><StaffManagement /></AdminLayout></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute requiredRole="admin"><AdminLayout><Settings /></AdminLayout></ProtectedRoute>} />
           
           <Route path="/billing" element={<StaffPanel />} />
         </Routes>

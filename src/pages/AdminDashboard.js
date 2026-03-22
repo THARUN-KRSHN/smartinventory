@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../api/api";
+import { Activity, TrendingUp, Package, AlertOctagon, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 
 const getMetric = (summary, keys, fallback = 0) => {
   for (const key of keys) {
@@ -19,41 +21,23 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     let isMounted = true;
-
     const fetchSummary = async () => {
       setLoading(true);
-      setErrorMessage("");
-
       try {
-        const data = await apiRequest({
-          method: "GET",
-          url: "/dashboard/summary",
-        });
-
-        if (isMounted) {
-          setSummary(data || {});
-        }
+        const data = await apiRequest({ method: "GET", url: "/dashboard/summary" });
+        if (isMounted) setSummary(data || {});
       } catch (error) {
         if (error?.response?.status === 403) {
           navigate("/billing", { replace: true });
-          return;
-        }
-
-        if (isMounted) {
+        } else if (isMounted) {
           setErrorMessage("Unable to load dashboard summary right now.");
         }
       } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
+        if (isMounted) setLoading(false);
       }
     };
-
     fetchSummary();
-
-    return () => {
-      isMounted = false;
-    };
+    return () => { isMounted = false; };
   }, [navigate]);
 
   const totalRevenue = Number(getMetric(summary, ["total_revenue", "revenue"], 0));
@@ -62,68 +46,107 @@ const AdminDashboard = () => {
   const lowStockAlerts = Number(getMetric(summary, ["low_stock_alerts", "low_stock"], 0));
 
   const currencyValue = useMemo(
-    () =>
-      new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(Number.isFinite(totalRevenue) ? totalRevenue : 0),
+    () => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(totalRevenue),
     [totalRevenue]
   );
 
-  if (loading) {
-    return (
-      <div className="d-flex justify-content-center align-items-center py-5">
-        <div className="spinner-border text-primary" role="status" aria-label="Loading dashboard">
-          <span className="visually-hidden">Loading dashboard...</span>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div>
-      <h2 className="mb-4">Admin Dashboard</h2>
+    <>
+      <div className="mb-5">
+        <h6 className="text-warning fw-bold text-uppercase" style={{ letterSpacing: "1px" }}>Intelligence Summary</h6>
+        <h1 className="display-3 fw-bolder mb-0" style={{ letterSpacing: "-2px", lineHeight: "1" }}>
+          Pulse <br />
+          <span style={{ fontStyle: "italic" }}>Dashboard.</span>
+        </h1>
+      </div>
 
       {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
 
-      <div className="row g-4">
-        <div className="col-12 col-md-6 col-xl-3">
-          <div className="card h-100 shadow-sm">
-            <div className="card-body">
-              <h6 className="text-muted mb-2">Total Revenue</h6>
-              <p className="h3 mb-0">{currencyValue}</p>
-            </div>
-          </div>
+      {loading ? (
+        <div className="d-flex justify-content-center py-5">
+          <div className="spinner-border text-primary" role="status" />
         </div>
+      ) : (
+        <div className="row g-4">
+            
+          {/* Main Revenue Card (Black background, distinct style) */}
+          <div className="col-12 col-xl-5">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="card border-0 h-100 p-4 rounded-5 shadow-lg" style={{ backgroundColor: "#111111", color: "#ffffff", minHeight: "350px" }}>
+              <div className="d-flex align-items-center mb-5">
+                <div className="bg-warning text-dark p-2 rounded-circle me-3">
+                  <Activity size={20} />
+                </div>
+                <span className="text-muted fw-semibold">Total Revenue</span>
+              </div>
+              
+              <div className="mt-auto">
+                <h1 className="display-2 fw-bolder mb-2" style={{ letterSpacing: "-2px" }}>{currencyValue}</h1>
+                <p className="text-success mb-5">
+                  <TrendingUp size={16} className="me-1" /> +12.5% vs baseline
+                </p>
+                <div className="d-flex justify-content-between align-items-end text-muted small pb-2">
+                  <span>Projected Impact</span>
+                  <span>+3.5k Growth / mo</span>
+                </div>
+                <div className="progress" style={{ height: "4px" }}>
+                  <div className="progress-bar bg-white" style={{ width: "65%" }}></div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
 
-        <div className="col-12 col-md-6 col-xl-3">
-          <div className="card h-100 shadow-sm">
-            <div className="card-body">
-              <h6 className="text-muted mb-2">Total Sales</h6>
-              <p className="h3 mb-0">{totalSales}</p>
-            </div>
-          </div>
-        </div>
+          {/* Secondary Metric Grid */}
+          <div className="col-12 col-xl-7">
+            <div className="row g-4 h-100">
 
-        <div className="col-12 col-md-6 col-xl-3">
-          <div className="card h-100 shadow-sm">
-            <div className="card-body">
-              <h6 className="text-muted mb-2">Total Products</h6>
-              <p className="h3 mb-0">{totalProducts}</p>
-            </div>
-          </div>
-        </div>
+              <div className="col-md-6">
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="card bg-white border-0 shadow-sm p-4 h-100 rounded-5 d-flex flex-column justify-content-between">
+                  <div className="d-flex align-items-center mb-4">
+                    <TrendingUp size={20} className="text-primary me-3" />
+                    <span className="text-muted fw-semibold">Total Sales</span>
+                  </div>
+                  <h2 className="display-4 fw-bolder fst-italic mb-4" style={{ letterSpacing: "-1px" }}>
+                    {totalSales} <span className="fs-5 text-muted fst-normal">orders</span>
+                  </h2>
+                  <div className="d-flex align-items-center justify-content-between mt-auto cursor-pointer" onClick={() => navigate("/inventory")} style={{ cursor: "pointer" }}>
+                     <span className="fw-semibold text-decoration-underline decoration-2">View Pipeline</span>
+                     <div className="bg-dark text-white rounded-circle p-2"><ArrowRight size={16} /></div>
+                  </div>
+                </motion.div>
+              </div>
 
-        <div className="col-12 col-md-6 col-xl-3">
-          <div className={`card h-100 shadow-sm ${lowStockAlerts > 0 ? "border-danger" : ""}`}>
-            <div className={`card-body ${lowStockAlerts > 0 ? "text-danger" : ""}`}>
-              <h6 className={lowStockAlerts > 0 ? "mb-2" : "text-muted mb-2"}>Low Stock Alerts</h6>
-              <p className="h3 mb-0">{lowStockAlerts}</p>
+              <div className="col-md-6">
+                 <div className="d-flex flex-column gap-4 h-100">
+                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="card bg-white border-0 shadow-sm p-4 rounded-5 h-50">
+                      <div className="d-flex align-items-center mb-2">
+                        <Package size={20} className="text-muted me-3" />
+                        <span className="text-muted fw-semibold">Inventory Products</span>
+                      </div>
+                      <div className="d-flex align-items-end justify-content-between mt-auto">
+                         <span className="text-muted small">Active Catalog</span>
+                         <h2 className="mb-0 fw-bold">{totalProducts}</h2>
+                      </div>
+                    </motion.div>
+
+                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}  className={`card border-0 shadow-sm p-4 rounded-5 h-50 ${lowStockAlerts > 0 ? "bg-danger text-white" : "bg-white"}`}>
+                      <div className="d-flex align-items-center mb-2">
+                        <AlertOctagon size={20} className={lowStockAlerts > 0 ? "text-white me-3" : "text-muted me-3"} />
+                        <span className={`fw-semibold ${lowStockAlerts > 0 ? "text-white" : "text-muted"}`}>Low Stock Alerts</span>
+                      </div>
+                      <div className="d-flex align-items-end justify-content-between mt-auto">
+                         <span className={`small ${lowStockAlerts > 0 ? "text-white-50" : "text-muted"}`}>Requires action</span>
+                         <h2 className="mb-0 fw-bold">{lowStockAlerts}</h2>
+                      </div>
+                    </motion.div>
+                 </div>
+              </div>
+
             </div>
           </div>
+
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 
