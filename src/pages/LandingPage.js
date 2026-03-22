@@ -29,9 +29,14 @@ const LandingNav = () => {
 
   return (
     <nav
-      className={`navbar navbar-expand-lg fixed-top transition-all ${scrolled ? "bg-white shadow-sm py-2" : "bg-transparent py-4"
-        }`}
-      style={{ transition: "all 0.3s ease", zIndex: 1000 }}
+      className={`navbar navbar-expand-lg fixed-top transition-all ${scrolled ? "shadow-sm py-2" : "bg-transparent py-4"}`}
+      style={{
+        transition: "all 0.3s ease",
+        zIndex: 1000,
+        backgroundColor: scrolled ? "rgba(73, 69, 255, 0.85)" : "transparent",
+        backdropFilter: scrolled ? "blur(12px)" : "none",
+        borderBottom: scrolled ? "1px solid rgba(255,255,255,0.1)" : "none"
+      }}
     >
       <div className="container">
         <a className="navbar-brand d-flex align-items-center" href="#hero">
@@ -41,13 +46,13 @@ const LandingNav = () => {
               width: "12px",
               height: "12px",
               borderRadius: "50%",
-              backgroundColor: scrolled ? "var(--primary)" : "#ffffff",
+              backgroundColor: "#ffffff",
             }}
           ></div>
           <span
             className="fw-bolder"
             style={{
-              color: scrolled ? "var(--primary)" : "#ffffff",
+              color: "#ffffff",
               letterSpacing: "1px",
             }}
           >
@@ -56,7 +61,7 @@ const LandingNav = () => {
           <span
             className="fw-light ms-1"
             style={{
-              color: scrolled ? "#1a1a1a" : "#ffffff",
+              color: "#ffffff",
               letterSpacing: "1px",
             }}
           >
@@ -70,38 +75,38 @@ const LandingNav = () => {
           data-bs-toggle="collapse"
           data-bs-target="#landingNavbar"
         >
-          <span className="navbar-toggler-icon" style={{ filter: scrolled ? "none" : "invert(1)" }} />
+          <span className="navbar-toggler-icon" style={{ filter: "invert(1)" }} />
         </button>
 
         <div className="collapse navbar-collapse" id="landingNavbar">
           <ul className="navbar-nav ms-auto align-items-center">
             <li className="nav-item">
-              <a className={`nav-link px-3 ${scrolled ? "text-dark" : "text-white"}`} href="#problem">
+              <a className="nav-link px-3 text-white" href="#problem">
                 Problem
               </a>
             </li>
             <li className="nav-item">
-              <a className={`nav-link px-3 ${scrolled ? "text-dark" : "text-white"}`} href="#solution">
+              <a className="nav-link px-3 text-white" href="#solution">
                 Solution
               </a>
             </li>
             <li className="nav-item">
-              <a className={`nav-link px-3 ${scrolled ? "text-dark" : "text-white"}`} href="#features">
+              <a className="nav-link px-3 text-white" href="#features">
                 Features
               </a>
             </li>
             <li className="nav-item">
-              <a className={`nav-link px-3 ${scrolled ? "text-dark" : "text-white"}`} href="#shops">
+              <a className="nav-link px-3 text-white" href="#shops">
                 Shops
               </a>
             </li>
             <li className="nav-item">
-              <a className={`nav-link px-3 ${scrolled ? "text-dark" : "text-white"}`} href="#faq">
+              <a className="nav-link px-3 text-white" href="#faq">
                 FAQ
               </a>
             </li>
             <li className="nav-item ms-lg-3 mt-3 mt-lg-0">
-              <Link to="/login" className={`btn ${scrolled ? "btn-primary" : "btn-super"} rounded-pill px-4`}>
+              <Link to="/login" className="btn btn-super-outline rounded-pill px-4">
                 Login
               </Link>
             </li>
@@ -188,13 +193,13 @@ const LandingPage = () => {
         <div className="container position-relative z-1" style={{ paddingTop: "80px" }}>
           <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="row justify-content-center">
             <div className="col-lg-8">
-              <motion.p variants={fadeUp} className="lead mb-3 fw-medium" style={{ opacity: 0.8 }}>
+              <motion.p variants={fadeUp} className="lead mb-3 fw-medium text-white" style={{ opacity: 0.8 }}>
                 Unlock the power of
               </motion.p>
-              <motion.h1 variants={fadeUp} className="display-2 fw-bolder mb-4" style={{ letterSpacing: "-1px" }}>
+              <motion.h1 variants={fadeUp} className="display-2 mb-4 text-white" style={{ letterSpacing: "0px", fontSize: "6.5rem", fontWeight: "900", lineHeight: "100px" }}>
                 Smart Inventory
               </motion.h1>
-              <motion.p variants={fadeUp} className="h4 fw-light mb-5" style={{ opacity: 0.9 }}>
+              <motion.p variants={fadeUp} className="h4 fw-light mb-5 text-white" style={{ opacity: 0.9 }}>
                 crafted for the superYou
               </motion.p>
 
@@ -202,9 +207,9 @@ const LandingPage = () => {
                 <Link to="/register" className="btn-super text-decoration-none">
                   Get Started
                 </Link>
-                <a href="#demo" className="btn-super-outline text-decoration-none">
+                <Link to="/demo" className="btn-super-outline text-decoration-none">
                   View Demo
-                </a>
+                </Link>
               </motion.div>
             </div>
           </motion.div>

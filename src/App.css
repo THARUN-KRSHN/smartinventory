@@ -17,14 +17,9 @@ body,
 
 /* 2. High-Visibility Text (Fixes the "Waking Up" message) */
 .loader-text,
-.text-muted,
 label,
-.form-label,
-h1,
-h2,
-h3 {
-  color: #1a1a1a;
-  text-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+.form-label {
+  color: #000000;
   font-weight: 600;
   opacity: 1;
 }
@@ -74,8 +69,3 @@ h3 {
 }
 
 /* 6. Navbar: Frosted Glass */
-.navbar {
-  background: rgba(15, 17, 26, 0.8) !important;
-  backdrop-filter: blur(10px) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-}

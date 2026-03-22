@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { apiRequest } from "../api/api";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Trash2, User, Phone, Receipt, FileText, Printer, X, ShoppingBag } from "lucide-react";
+import { Plus, Minus, Trash2, User, Phone, Receipt, FileText, Printer, X, ShoppingBag, Search, Package } from "lucide-react";
 
 const Billing = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Draft Invoice State
   const [customerName, setCustomerName] = useState("");
@@ -18,6 +19,7 @@ const Billing = () => {
   const [showInvoice, setShowInvoice] = useState(false);
   const [invoiceData, setInvoiceData] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isDraftPreview, setIsDraftPreview] = useState(false);
 
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const shopName = user?.shop_name || localStorage.getItem("shop_name") || "Smart Inventory";
@@ -39,6 +41,33 @@ const Billing = () => {
     fetchInventory();
     return () => { isMounted = false; };
   }, []);
+
+  const filteredProducts = products.filter(p => (p.product_name || "").toLowerCase().includes(searchTerm.toLowerCase()));
+
+  const handleAddFromCard = (product) => {
+    const existingItem = orderItems.find(item => item.product_id === (product.product_id ?? product.id));
+    if (existingItem) {
+      handleItemChange(existingItem.id, "quantity", parseInt(existingItem.quantity) + 1);
+    } else {
+      const emptyRow = orderItems.find(item => item.product_id === "" && item.product_name === "");
+      if (emptyRow) {
+        setOrderItems(orderItems.map(item => {
+          if (item.id === emptyRow.id) {
+            return { ...item, product_id: product.product_id ?? product.id, product_name: product.product_name, price: product.price, quantity: 1 };
+          }
+          return item;
+        }));
+      } else {
+        setOrderItems([...orderItems, { 
+          id: Date.now(), 
+          product_id: product.product_id ?? product.id, 
+          product_name: product.product_name, 
+          quantity: 1, 
+          price: product.price 
+        }]);
+      }
+    }
+  };
 
   const handleAddItem = () => {
     setOrderItems([...orderItems, { id: Date.now(), product_id: "", product_name: "", quantity: 1, price: 0 }]);
@@ -71,11 +100,33 @@ const Billing = () => {
   const gst = subtotal * 0.18;
   const total = subtotal + gst;
 
+  const handleViewInvoice = () => {
+    const validItems = orderItems.filter(item => item.product_name.trim() !== "");
+    if (validItems.length === 0) {
+      alert("Please add at least one item to preview the invoice.");
+      return;
+    }
+    setInvoiceData({
+      invoiceNo: "DRAFT",
+      date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      customerName: customerName || "Walk-in Customer",
+      whatsapp: whatsapp || "N/A",
+      items: validItems,
+      subtotal,
+      gst,
+      total,
+      shopName,
+      billerName: staffName
+    });
+    setIsDraftPreview(true);
+    setShowInvoice(true);
+  };
+
   const handleGenerateInvoice = async () => {
     // Validate
     const validItems = orderItems.filter(item => item.product_name.trim() !== "" && item.quantity > 0 && item.product_id);
     if (validItems.length === 0) {
-      alert("Please add at least one valid inventory item with a product ID to the invoice.");
+      alert("Please add at least one valid inventory item with a product ID to generate a bill.");
       return;
     }
 
@@ -103,7 +154,9 @@ const Billing = () => {
         billerName: staffName
       });
 
+      setIsDraftPreview(false);
       setShowInvoice(true);
+      clearDraft();
     } catch (error) {
       alert(error?.response?.data?.detail || "Failed to generate invoice. Please check stock levels and try again.");
     } finally {
@@ -125,18 +178,47 @@ const Billing = () => {
   return (
     <div className="row h-100 g-0">
       
-      {/* LEFT COLUMN: Order Feed / Background Info */}
-      <div className="col-12 col-xl-7 d-none d-xl-flex flex-column h-100 p-5 position-relative align-items-center justify-content-center" style={{ backgroundColor: "#fafbfc" }}>
-         <div className="text-center" style={{ filter: "blur(0.5px)", opacity: 0.9 }}>
-            <h1 className="fw-bolder" style={{ fontSize: "6rem", letterSpacing: "-4px", color: "#e2e8f0", lineHeight: "1" }}>
-              Order<br/>Feed.
-            </h1>
-            <div className="mt-4">
-              <span className="badge bg-dark rounded-pill px-4 py-2 text-uppercase letter-spacing-1">Live Queue</span>
-            </div>
-         </div>
-         {/* Decorative blurred blob */}
-         <div className="position-absolute rounded-circle blur-3xl z-0" style={{ width: "300px", height: "300px", backgroundColor: "var(--primary)", opacity: 0.05, top: "20%", left: "20%" }}></div>
+      {/* LEFT COLUMN: Product Grid Menu */}
+      <div className="col-12 col-xl-7 d-none d-xl-flex flex-column h-100 bg-light p-4 pt-5 border-end">
+        <div className="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+          <div>
+            <h3 className="fw-bolder m-0 text-dark">Menu</h3>
+            <p className="text-muted small mb-0">Select products to add to bill</p>
+          </div>
+          <div className="position-relative" style={{width: '300px'}}>
+            <Search size={18} className="position-absolute text-muted" style={{top: '10px', left: '15px'}} />
+            <input type="text" className="form-control rounded-pill ps-5 pe-3 py-2 shadow-sm border-0" placeholder="Search products..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+          </div>
+        </div>
+        
+        <div className="row g-3 overflow-auto pb-4 align-content-start flex-grow-1" style={{minHeight: 0}}>
+           {filteredProducts.map(p => (
+              <div key={p.product_id ?? p.id} className="col-4">
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="card h-100 border-0 shadow-sm rounded-4 cursor-pointer" onClick={() => handleAddFromCard(p)} style={{cursor: 'pointer'}}>
+                   <div className="card-body d-flex flex-column h-100 p-3">
+                     <h6 className="fw-bold text-dark mb-1 text-truncate" title={p.product_name}>{p.product_name}</h6>
+                     <div className="mt-auto d-flex justify-content-between align-items-center mt-3">
+                       <span className="text-primary fw-bolder">₹{parseFloat(p.price).toFixed(2)}</span>
+                       <span className={`badge ${p.quantity > p.threshold ? 'bg-success bg-opacity-10 text-success' : 'bg-warning bg-opacity-10 text-warning'} rounded-pill small`}>{p.quantity} in stock</span>
+                     </div>
+                   </div>
+                </motion.div>
+              </div>
+           ))}
+           {filteredProducts.length === 0 && !loading && (
+              <div className="col-12 text-center text-muted py-5 mt-5">
+                 <Package size={40} className="mb-3 opacity-50" />
+                 <h5>No products found</h5>
+                 <p className="small">Try adjusting your search criteria.</p>
+              </div>
+           )}
+           {loading && (
+             <div className="col-12 text-center text-muted py-5 mt-5">
+                <span className="spinner-border spinner-border-sm text-primary mb-3" />
+                <p>Loading catalog...</p>
+             </div>
+           )}
+        </div>
       </div>
 
       {/* RIGHT COLUMN: Draft Invoice Panel */}
@@ -158,19 +240,19 @@ const Billing = () => {
         {/* Scrollable Form Body */}
         <div className="flex-grow-1 overflow-auto p-4 p-md-5 pt-4">
            
-           <div className="row g-3 mb-5">
+           <div className="row g-3 mb-4">
              <div className="col-6">
                 <label className="form-label small text-muted fst-italic mb-1">Customer Name</label>
-                <div className="input-group bg-light rounded-4 overflow-hidden border">
-                   <span className="input-group-text bg-transparent border-0 pe-1"><User size={16} className="text-muted" /></span>
-                   <input type="text" className="form-control bg-transparent border-0 py-2 ps-2 shadow-none" placeholder="Name" value={customerName} onChange={e => setCustomerName(e.target.value)} />
+                <div className="input-group overflow-hidden rounded-3 border">
+                   <span className="input-group-text bg-white border-0 pe-1"><User size={16} className="text-muted" /></span>
+                   <input type="text" className="form-control bg-white border-0 py-2 ps-2 shadow-none" placeholder="Name" value={customerName} onChange={e => setCustomerName(e.target.value)} />
                 </div>
              </div>
              <div className="col-6">
                 <label className="form-label small text-muted fst-italic mb-1">WhatsApp #</label>
-                <div className="input-group bg-light rounded-4 overflow-hidden border">
-                   <span className="input-group-text bg-transparent border-0 pe-1"><Phone size={16} className="text-muted" /></span>
-                   <input type="text" className="form-control bg-transparent border-0 py-2 ps-2 shadow-none" placeholder="Number" value={whatsapp} onChange={e => setWhatsapp(e.target.value)} />
+                <div className="input-group overflow-hidden rounded-3 border">
+                   <span className="input-group-text bg-white border-0 pe-1"><Phone size={16} className="text-muted" /></span>
+                   <input type="text" className="form-control bg-white border-0 py-2 ps-2 shadow-none" placeholder="Number" value={whatsapp} onChange={e => setWhatsapp(e.target.value)} />
                 </div>
              </div>
            </div>
@@ -186,37 +268,33 @@ const Billing = () => {
               <AnimatePresence>
                 {orderItems.map((item, index) => (
                   <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, scale: 0.95 }} key={item.id} className="row g-2 align-items-center">
-                     <div className="col-6">
+                     <div className="col-5">
                         {loading ? (
-                           <input type="text" className="form-control bg-light border-0 rounded-3 py-2 px-3 shadow-none" placeholder="Loading products..." disabled />
+                           <input type="text" className="form-control bg-white border rounded-3 py-2 px-3 shadow-none" placeholder="Loading products..." disabled />
                         ) : (
-                           <div className="position-relative">
-                              <input 
-                                list={`products-list-${item.id}`} 
-                                className="form-control bg-light border-0 rounded-3 py-2 px-3 shadow-none fw-medium" 
-                                placeholder="Product Name" 
-                                value={item.product_name} 
-                                onChange={(e) => {
-                                  // Update name directly so custom items can be typed
-                                  handleItemChange(item.id, "product_name", e.target.value);
-                                  // If they pick from list, the product_id is captured, otherwise it stays empty for custom items
-                                  const selected = products.find(p => p.product_name === e.target.value);
-                                  if (selected) {
-                                    handleItemChange(item.id, "product_id", selected.product_id ?? selected.id);
-                                  }
-                                }} 
-                              />
-                              <datalist id={`products-list-${item.id}`}>
-                                 {products.map(p => <option key={p.product_id ?? p.id} value={p.product_name} />)}
-                              </datalist>
-                           </div>
+                           <input 
+                             className="form-control bg-white border rounded-3 py-2 px-3 shadow-none fw-medium" 
+                             placeholder="Product Name" 
+                             value={item.product_name} 
+                             onChange={(e) => {
+                               handleItemChange(item.id, "product_name", e.target.value);
+                               const selected = products.find(p => p.product_name === e.target.value);
+                               if (selected) {
+                                 handleItemChange(item.id, "product_id", selected.product_id ?? selected.id);
+                               }
+                             }} 
+                           />
                         )}
                      </div>
-                     <div className="col-2">
-                        <input type="number" min="1" className="form-control bg-light border-0 rounded-3 py-2 px-2 text-center shadow-none fw-mono" value={item.quantity} onChange={(e) => handleItemChange(item.id, "quantity", e.target.value)} />
+                     <div className="col-3">
+                        <div className="d-flex align-items-center bg-white border rounded-3 overflow-hidden">
+                           <button className="btn btn-light border-0 px-2 py-1 text-muted" onClick={() => handleItemChange(item.id, "quantity", Math.max(1, (parseInt(item.quantity) || 1) - 1))}><Minus size={14}/></button>
+                           <input type="text" className="form-control border-0 px-1 py-1 text-center shadow-none fw-mono text-dark" value={item.quantity} onChange={(e) => handleItemChange(item.id, "quantity", e.target.value.replace(/[^0-9]/g, ''))} style={{WebkitAppearance: 'none', MozAppearance: 'textfield'}} />
+                           <button className="btn btn-light border-0 px-2 py-1 text-muted" onClick={() => handleItemChange(item.id, "quantity", (parseInt(item.quantity) || 0) + 1)}><Plus size={14}/></button>
+                        </div>
                      </div>
                      <div className="col-3">
-                        <input type="number" min="0" step="0.01" className="form-control bg-light border-0 rounded-3 py-2 px-2 text-center shadow-none fw-mono" placeholder="₹" value={item.price} onChange={(e) => handleItemChange(item.id, "price", e.target.value)} />
+                        <input type="number" min="0" step="0.01" className="form-control bg-white border rounded-3 py-2 px-2 text-center shadow-none fw-mono" placeholder="₹" value={item.price} onChange={(e) => handleItemChange(item.id, "price", e.target.value)} />
                      </div>
                      <div className="col-1 text-end">
                         <button className="btn btn-link text-danger p-0 shadow-none border-0" onClick={() => handleRemoveItem(item.id)} disabled={orderItems.length <= 1}>
@@ -248,7 +326,7 @@ const Billing = () => {
 
         {/* Footer Actions */}
         <div className="p-4 p-md-5 pt-3 border-top bg-white z-2 d-flex gap-3 mt-auto">
-           <button className="btn btn-dark rounded-pill py-3 fw-bold flex-grow-1 shadow-sm d-flex justify-content-center align-items-center" onClick={handleGenerateInvoice} disabled={isGenerating}>
+           <button className="btn btn-dark rounded-pill py-3 fw-bold flex-grow-1 shadow-sm d-flex justify-content-center align-items-center" onClick={handleViewInvoice} disabled={isGenerating}>
               <FileText size={18} className="me-2"/> View Invoice
            </button>
            <button className="btn btn-success rounded-pill py-3 fw-bold flex-grow-1 shadow-sm d-flex justify-content-center align-items-center text-white" onClick={handleGenerateInvoice} disabled={isGenerating}>
@@ -279,9 +357,14 @@ const Billing = () => {
 
               <div id="invoice-print-area" className="p-4 p-md-5 bg-white rounded-4 flex-grow-1">
                  {/* Invoice Header */}
-                 <div className="text-center mb-5 pb-3 border-bottom">
+                 <div className="text-center mb-5 pb-3 border-bottom position-relative">
+                    {isDraftPreview && (
+                       <div className="position-absolute top-50 start-50 translate-middle" style={{transform: "translate(-50%, -50%) rotate(-15deg)", color: "rgba(0,0,0,0.05)", fontSize: "6rem", fontWeight: "900", pointerEvents: "none", whiteSpace: "nowrap"}}>
+                          PREVIEW
+                       </div>
+                    )}
                     <h2 className="fw-bolder mb-1 text-uppercase letter-spacing-1">{invoiceData.shopName}</h2>
-                    <p className="text-muted small mb-0">TAX INVOICE</p>
+                    <p className="text-muted small mb-0">{isDraftPreview ? "DRAFT TAX INVOICE" : "TAX INVOICE"}</p>
                  </div>
                  
                  <div className="row mb-5">

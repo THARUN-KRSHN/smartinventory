@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../api/api";
 import { Activity, TrendingUp, Package, AlertOctagon, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 const getMetric = (summary, keys, fallback = 0) => {
   for (const key of keys) {
@@ -18,6 +19,7 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [summary, setSummary] = useState({});
+  const [salesTrend, setSalesTrend] = useState([]);
 
   useEffect(() => {
     let isMounted = true;
@@ -26,6 +28,12 @@ const AdminDashboard = () => {
       try {
         const data = await apiRequest({ method: "GET", url: "/dashboard/summary" });
         if (isMounted) setSummary(data || {});
+        
+        // Fetch Trends
+        const trendData = await apiRequest({ method: "GET", url: "/dashboard/daily-sales" });
+        if (isMounted && Array.isArray(trendData)) {
+          setSalesTrend(trendData.slice().reverse()); // Reverse to show oldest to newest
+        }
       } catch (error) {
         if (error?.response?.status === 403) {
           navigate("/billing", { replace: true });
@@ -67,6 +75,7 @@ const AdminDashboard = () => {
           <div className="spinner-border text-primary" role="status" />
         </div>
       ) : (
+        <>
         <div className="row g-4">
             
           {/* Main Revenue Card (Black background, distinct style) */}
@@ -145,6 +154,46 @@ const AdminDashboard = () => {
           </div>
 
         </div>
+        
+        <div className="row mt-4">
+          <div className="col-12">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="card bg-white border-0 shadow-sm p-4 p-md-5 rounded-5">
+               <div className="mb-5 d-flex justify-content-between align-items-center">
+                 <h4 className="fw-bolder fst-italic letter-spacing-min-1 text-dark m-0 d-flex align-items-center"><Activity size={24} className="me-2 text-primary" /> Sales Trajectory</h4>
+                 <span className="badge bg-light text-muted rounded-pill px-3 py-2 border">Last 30 Days</span>
+               </div>
+               <div style={{ width: '100%', height: 350 }}>
+                 {salesTrend.length > 0 ? (
+                   <ResponsiveContainer width="100%" height="100%">
+                     <BarChart data={salesTrend}>
+                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                       <XAxis 
+                         dataKey="date" 
+                         tick={{fontSize: 12, fill: '#6c757d'}} 
+                         tickLine={false} 
+                         axisLine={false} 
+                         tickFormatter={(val) => { 
+                           const d = new Date(val); 
+                           return `${d.getDate()} ${d.toLocaleString('default', {month:'short'})}`; 
+                         }} 
+                       />
+                       <YAxis tick={{fontSize: 12, fill: '#6c757d'}} tickLine={false} axisLine={false} />
+                       <Tooltip 
+                         cursor={{fill: '#f8f9fa'}} 
+                         contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 8px 16px rgba(0,0,0,0.1)', padding: '12px 20px'}}
+                         labelStyle={{fontWeight: 'bold', marginBottom: '8px', color: '#111'}}
+                       />
+                       <Bar dataKey="count" name="Orders Placed" fill="var(--primary)" radius={[6, 6, 0, 0]} />
+                     </BarChart>
+                   </ResponsiveContainer>
+                 ) : (
+                   <div className="h-100 d-flex align-items-center justify-content-center text-muted fst-italic bg-light rounded-4">No order data available for this period.</div>
+                 )}
+               </div>
+            </motion.div>
+          </div>
+        </div>
+        </>
       )}
     </>
   );

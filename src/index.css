@@ -33,7 +33,7 @@ code {
 .landing-hero {
   background: linear-gradient(135deg, var(--primary) 0%, #6865ff 100%);
   color: var(--text-light);
-  min-height: 90vh;
+  min-height: 100vh;
   position: relative;
   overflow: hidden;
 }

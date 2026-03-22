@@ -17,6 +17,7 @@ import AdminLayout from "./components/AdminLayout";
 import AdminDashboard from "./pages/AdminDashboard";
 import PublicInventory from "./pages/PublicInventory";
 import Billing from "./pages/Billing";
+import DemoPage from "./pages/DemoPage";
 
 function LogoutButton() {
   const { user, logout } = useContext(AuthContext);
@@ -38,7 +39,7 @@ function AppContent() {
   const isLandingPage = location.pathname === '/';
   const isAuthPage = ['/login', '/register', '/staff-login'].includes(location.pathname);
   const isAdminPage = ['/dashboard', '/inventory', '/staff', '/settings', '/billing'].includes(location.pathname);
-  const hideNav = isLandingPage || isAuthPage || isAdminPage;
+  const hideNav = isLandingPage || isAuthPage || isAdminPage || location.pathname.startsWith('/public/') || location.pathname === '/demo';
 
   useEffect(() => {
     fetch("http://localhost:8000/public/shops").catch(() => {});
@@ -84,6 +85,7 @@ function AppContent() {
       <main className={hideNav ? "" : "container py-5"}>
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/demo" element={<DemoPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/staff-login" element={<StaffLogin />} />
           <Route path="/register" element={<RegisterPage />} />
