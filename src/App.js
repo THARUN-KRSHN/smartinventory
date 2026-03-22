@@ -1,6 +1,6 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css"; 
-import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Link, Route, Routes, useLocation } from "react-router-dom";
 import { useContext, useEffect } from "react";
 import { AuthContext, AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -30,17 +30,21 @@ function LogoutButton() {
 }
 
 function AppContent() {
+  const location = useLocation();
+  const isLandingPage = location.pathname === '/';
+
   useEffect(() => {
-    fetch("https://db-project-backend-2ull.onrender.com/public/shops").catch(() => {});
+    fetch("http://localhost:8000/public/shops").catch(() => {});
   }, []);
 
   return (
-    <BrowserRouter>
-      <nav className="navbar navbar-expand-lg navbar-dark sticky-top py-3">
-        <div className="container">
-          {/* Updated Logo Section */}
-          {/* Updated Logo Section: SMART INVENTORY */}
-          {/* FORCING NAME CHANGE TO SMART INVENTORY */}
+    <>
+      {!isLandingPage && (
+        <nav className="navbar navbar-expand-lg navbar-dark sticky-top py-3">
+          <div className="container">
+            {/* Updated Logo Section */}
+            {/* Updated Logo Section: SMART INVENTORY */}
+            {/* FORCING NAME CHANGE TO SMART INVENTORY */}
 <Link className="navbar-brand d-flex align-items-center" to="/">
   <div className="brand-dot me-2"></div>
   <span className="fw-bolder" style={{ color: '#4285f4', letterSpacing: '1px' }}>SMART</span>
@@ -67,9 +71,10 @@ function AppContent() {
             </div>
           </div>
         </div>
-      </nav>
+        </nav>
+      )}
 
-      <main className="container py-5">
+      <main className={isLandingPage ? "" : "container py-5"}>
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -89,16 +94,18 @@ function AppContent() {
           <Route path="/billing" element={<StaffPanel />} />
         </Routes>
       </main>
-    </BrowserRouter>
+    </>
   );
 }
 
 function App() {
   return (
     <AuthProvider>
-      <div id="antigravity-theme">
-        <AppContent />
-      </div>
+      <BrowserRouter>
+        <div id="antigravity-theme">
+          <AppContent />
+        </div>
+      </BrowserRouter>
     </AuthProvider>
   );
 }
