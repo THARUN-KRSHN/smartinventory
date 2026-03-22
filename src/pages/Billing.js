@@ -17,6 +17,7 @@ const Billing = () => {
   // Invoice view state
   const [showInvoice, setShowInvoice] = useState(false);
   const [invoiceData, setInvoiceData] = useState(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const shopName = user?.shop_name || localStorage.getItem("shop_name") || "Smart Inventory";
@@ -70,28 +71,44 @@ const Billing = () => {
   const gst = subtotal * 0.18;
   const total = subtotal + gst;
 
-  const handleGenerateInvoice = () => {
+  const handleGenerateInvoice = async () => {
     // Validate
-    const validItems = orderItems.filter(item => item.product_name.trim() !== "" && item.quantity > 0);
+    const validItems = orderItems.filter(item => item.product_name.trim() !== "" && item.quantity > 0 && item.product_id);
     if (validItems.length === 0) {
-      alert("Please add at least one valid item to the invoice.");
+      alert("Please add at least one valid inventory item with a product ID to the invoice.");
       return;
     }
 
-    setInvoiceData({
-      invoiceNo: `INV-${Math.floor(100000 + Math.random() * 900000)}`,
-      date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
-      customerName: customerName || "Walk-in Customer",
-      whatsapp: whatsapp || "N/A",
-      items: validItems,
-      subtotal,
-      gst,
-      total,
-      shopName,
-      billerName: staffName
-    });
+    setIsGenerating(true);
+    try {
+      const payload = {
+        items: validItems.map((item) => ({
+          product_id: parseInt(item.product_id),
+          quantity: parseInt(item.quantity)
+        }))
+      };
+      
+      const response = await apiRequest({ method: "POST", url: "/sales/", data: payload });
 
-    setShowInvoice(true);
+      setInvoiceData({
+        invoiceNo: response.sale_id ? `INV-${response.sale_id.toString().padStart(6, '0')}` : `INV-${Math.floor(100000 + Math.random() * 900000)}`,
+        date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        customerName: customerName || "Walk-in Customer",
+        whatsapp: whatsapp || "N/A",
+        items: validItems,
+        subtotal,
+        gst,
+        total,
+        shopName,
+        billerName: staffName
+      });
+
+      setShowInvoice(true);
+    } catch (error) {
+      alert(error?.response?.data?.detail || "Failed to generate invoice. Please check stock levels and try again.");
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const clearDraft = () => {
@@ -231,11 +248,11 @@ const Billing = () => {
 
         {/* Footer Actions */}
         <div className="p-4 p-md-5 pt-3 border-top bg-white z-2 d-flex gap-3 mt-auto">
-           <button className="btn btn-dark rounded-pill py-3 fw-bold flex-grow-1 shadow-sm d-flex justify-content-center align-items-center" onClick={handleGenerateInvoice}>
+           <button className="btn btn-dark rounded-pill py-3 fw-bold flex-grow-1 shadow-sm d-flex justify-content-center align-items-center" onClick={handleGenerateInvoice} disabled={isGenerating}>
               <FileText size={18} className="me-2"/> View Invoice
            </button>
-           <button className="btn btn-success rounded-pill py-3 fw-bold flex-grow-1 shadow-sm d-flex justify-content-center align-items-center text-white" onClick={handleGenerateInvoice}>
-              <ShoppingBag size={18} className="me-2"/> Generate Bill
+           <button className="btn btn-success rounded-pill py-3 fw-bold flex-grow-1 shadow-sm d-flex justify-content-center align-items-center text-white" onClick={handleGenerateInvoice} disabled={isGenerating}>
+              {isGenerating ? <span className="spinner-border spinner-border-sm me-2" /> : <ShoppingBag size={18} className="me-2"/>} {isGenerating ? "Processing..." : "Generate Bill"}
            </button>
         </div>
       </div>

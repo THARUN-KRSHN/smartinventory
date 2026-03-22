@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { apiRequest } from "../api/api";
-import { Plus, Edit2, Trash2, Package } from "lucide-react";
+import { Plus, Edit2, Trash2, Package, AlertOctagon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const getRole = () => {
@@ -13,10 +13,11 @@ const Inventory = () => {
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   
-  // Modal state
+  // Modal & Notification state
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [lowStockAlerts, setLowStockAlerts] = useState([]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
@@ -38,6 +39,9 @@ const Inventory = () => {
       const data = await apiRequest({ method: "GET", url: "/inventory/" });
       const list = Array.isArray(data) ? data : data?.products || [];
       setProducts(list);
+      
+      const alerts = list.filter(p => Number(p.quantity ?? 0) <= Number(p.threshold ?? 0));
+      setLowStockAlerts(alerts);
     } catch (_error) {
       setErrorMessage("Unable to load inventory data right now.");
     } finally {
@@ -135,8 +139,26 @@ const Inventory = () => {
   };
 
   return (
-    <div className="d-flex flex-column h-100">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+    <div className="d-flex flex-column h-100 position-relative">
+      {/* Low Stock Toast Notifications */}
+      <AnimatePresence>
+        {lowStockAlerts.length > 0 && (
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9 }} className="position-absolute top-0 start-50 translate-middle-x z-3 w-100" style={{ maxWidth: "500px", marginTop: "10px" }}>
+            <div className="alert alert-danger shadow-lg border-0 rounded-4 d-flex justify-content-between align-items-center">
+              <div className="d-flex align-items-center">
+                <div className="bg-white text-danger rounded-circle p-2 me-3 d-flex"><AlertOctagon size={20} /></div>
+                <div>
+                   <h6 className="fw-bold mb-0">Low Stock Alert</h6>
+                   <p className="small mb-0 opacity-75">{lowStockAlerts.length} item{lowStockAlerts.length > 1 ? "s" : ""} falling below threshold.</p>
+                </div>
+              </div>
+              <button className="btn-close shadow-none" onClick={() => setLowStockAlerts([])}></button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="d-flex justify-content-between align-items-center mb-4 mt-2">
         <div>
            <h2 className="display-6 fw-bold mb-0" style={{ letterSpacing: "-1px" }}>Inventory</h2>
            <p className="text-secondary mt-1">Manage and track your products.</p>
