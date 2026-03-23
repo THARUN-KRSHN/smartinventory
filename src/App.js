@@ -3,6 +3,7 @@ import "./App.css";
 import { BrowserRouter, Link, Route, Routes, useLocation } from "react-router-dom";
 import { useContext, useEffect } from "react";
 import { AuthContext, AuthProvider } from "./context/AuthContext";
+import { apiRequest } from "./api/api";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Pages
@@ -42,7 +43,8 @@ function AppContent() {
   const hideNav = isLandingPage || isAuthPage || isAdminPage || location.pathname.startsWith('/public/') || location.pathname === '/demo';
 
   useEffect(() => {
-    fetch("http://localhost:8000/public/shops").catch(() => {});
+    // Warm-up ping so Render doesn't cold-start on first user action
+    apiRequest({ method: "GET", url: "/public/shops" }).catch(() => {});
   }, []);
 
   return (
