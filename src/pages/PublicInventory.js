@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Package, ShoppingBag, Search, Tag, X } from "lucide-react";
+import { ArrowLeft, Package, ShoppingBag, Tag, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const BASE_URL = "http://localhost:8000";

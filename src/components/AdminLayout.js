@@ -7,16 +7,13 @@ import {
   Users,
   Settings,
   LogOut,
-  Store,
-  Menu,
-  X
+  Store
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 const AdminLayout = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [shopName, setShopName] = useState("Smart Inventory");
 
   const [showSetupModal, setShowSetupModal] = useState(false);
@@ -110,7 +107,6 @@ const AdminLayout = ({ children }) => {
             <Link
               key={item.path}
               to={item.path}
-              onClick={() => setIsMobileOpen(false)}
               className={`d-flex align-items-center p-3 rounded-4 text-decoration-none transition-all`}
               style={{
                 backgroundColor: isActive ? "#000000" : "transparent",
@@ -146,48 +142,31 @@ const AdminLayout = ({ children }) => {
         <SidebarContent />
       </div>
 
-      {/* Mobile Topbar & Sidebar Overlay */}
-      <div className="d-lg-none position-fixed top-0 start-0 w-100 bg-white border-bottom shadow-sm z-3 d-flex justify-content-between align-items-center p-3">
-        <div className="d-flex align-items-center">
-          <Store className="text-warning me-2" size={24} />
-          <h6 className="mb-0 fw-bold">{shopName}</h6>
-        </div>
-        <button className="btn btn-light border-0 p-2" onClick={() => setIsMobileOpen(true)}>
-          <Menu size={24} />
-        </button>
-      </div>
-
-      {/* Mobile Sidebar Backdrop */}
-      <AnimatePresence>
-        {isMobileOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="position-fixed top-0 start-0 w-100 h-100 bg-dark z-3"
-              style={{ opacity: 0.5 }}
-              onClick={() => setIsMobileOpen(false)}
-            />
-            <motion.div
-              initial={{ x: "-100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
-              transition={{ type: "tween", duration: 0.3 }}
-              className="position-fixed top-0 start-0 h-100 z-3 bg-white shadow-lg"
-            >
-              <button
-                className="btn btn-light position-absolute border-0 p-2"
-                style={{ top: "15px", right: "15px" }}
-                onClick={() => setIsMobileOpen(false)}
+      {/* Mobile Bottom Navigation (Floating Pill) */}
+      <div className="d-lg-none position-fixed bottom-0 start-50 translate-middle-x mb-4 z-3" style={{ width: "90%", maxWidth: "400px" }}>
+        <div className="bg-white rounded-pill shadow-lg d-flex justify-content-between align-items-center p-2 border">
+          {navItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`d-flex align-items-center justify-content-center text-decoration-none transition-all ${isActive ? 'bg-dark text-white rounded-pill px-4 py-2' : 'text-muted p-2'}`}
+                style={{ 
+                  flex: isActive ? '1' : '0 1 auto',
+                  minWidth: isActive ? "110px" : "auto",
+                  whiteSpace: "nowrap"
+                }}
               >
-                <X size={24} />
-              </button>
-              <SidebarContent />
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+                <div className="d-flex align-items-center">
+                   {item.icon}
+                   {isActive && <span className="ms-2 fw-semibold" style={{ fontSize: "14px" }}>{item.label}</span>}
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
 
       {/* First Time Setup Modal Overlay */}
       {showSetupModal && (
@@ -217,11 +196,8 @@ const AdminLayout = ({ children }) => {
       )}
 
       {/* Main Content Area */}
-      <div className="flex-grow-1 h-100 overflow-auto position-relative" style={{ paddingTop: "70px", paddingBottom: "30px" }}>
-        {/* We remove padding-top on large screens where there's no mobile header */}
-        <div className="p-4 p-md-5 h-100" style={{ paddingTop: "0" }}>
-          {/* Apply a subtle margin top reset for desktop */}
-          <style dangerouslySetInnerHTML={{__html: "@media (min-width: 992px) { .flex-grow-1 { padding-top: 30px !important; } }"}} />
+      <div className="flex-grow-1 h-100 overflow-auto position-relative" style={{ paddingBottom: "90px" }}>
+        <div className="p-3 p-xl-5 h-100">
           {children}
         </div>
       </div>

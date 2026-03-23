@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ChevronRight, Store, Box, Users, Receipt, FileText, CheckCircle2, LayoutDashboard, Globe, TrendingUp, AlertTriangle } from "lucide-react";
+import { ArrowLeft, ChevronRight, Box, FileText, TrendingUp, AlertTriangle } from "lucide-react";
 
 // Mockup Data for steps
 const DEMO_STEPS = [

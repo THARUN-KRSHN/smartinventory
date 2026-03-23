@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { apiRequest } from "../api/api";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Minus, Trash2, User, Phone, Receipt, FileText, Printer, X, ShoppingBag, Search, Package } from "lucide-react";
+import { Plus, Minus, Trash2, User, Phone, Receipt, FileText, X, ShoppingBag, Package } from "lucide-react";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
@@ -357,18 +357,26 @@ const Billing = () => {
                               {loading ? (
                                  <input type="text" className="form-control bg-white border rounded-3 py-2 px-3 shadow-none" placeholder="Loading products..." disabled />
                               ) : (
-                                 <input
-                                    className="form-control bg-white border rounded-3 py-2 px-3 shadow-none fw-medium"
-                                    placeholder="Product Name"
-                                    value={item.product_name}
-                                    onChange={(e) => {
-                                       handleItemChange(item.id, "product_name", e.target.value);
-                                       const selected = products.find(p => p.product_name === e.target.value);
-                                       if (selected) {
-                                          handleItemChange(item.id, "product_id", selected.product_id ?? selected.id);
-                                       }
-                                    }}
-                                 />
+                                 <>
+                                    <input
+                                       className="form-control bg-white border rounded-3 py-2 px-3 shadow-none fw-medium"
+                                       placeholder="Product Name"
+                                       value={item.product_name}
+                                       list={`products-list-${item.id}`}
+                                       onChange={(e) => {
+                                          handleItemChange(item.id, "product_name", e.target.value);
+                                          const selected = products.find(p => p.product_name === e.target.value);
+                                          if (selected) {
+                                             handleItemChange(item.id, "product_id", selected.product_id ?? selected.id);
+                                          }
+                                       }}
+                                    />
+                                    <datalist id={`products-list-${item.id}`}>
+                                       {products.map(p => (
+                                          <option key={p.product_id ?? p.id} value={p.product_name} />
+                                       ))}
+                                    </datalist>
+                                 </>
                               )}
                            </div>
                            <div className="col-3">

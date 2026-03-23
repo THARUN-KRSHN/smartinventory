@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { apiRequest } from "../api/api";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ArrowRight,
   CheckCircle2,
@@ -151,8 +151,8 @@ const LandingPage = () => {
   const [loadingShops, setLoadingShops] = useState(true);
   const [error, setError] = useState("");
 
-  const { scrollYProgress } = useScroll();
-  const yPos = useTransform(scrollYProgress, [0, 1], [0, 300]);
+  // const { scrollYProgress } = useScroll();
+  // const yPos = useTransform(scrollYProgress, [0, 1], [0, 300]);
 
   useEffect(() => {
     let isMounted = true;
