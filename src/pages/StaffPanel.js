@@ -53,8 +53,8 @@ const generatePDF = (saleData, shopNameFromState) => {
     return [
       String(item.name || item.product_name || "-"),
       String(qty),
-      `$${price.toFixed(2)}`,
-      `$${subtotal.toFixed(2)}`,
+      `₹${price.toFixed(2)}`,
+      `₹${subtotal.toFixed(2)}`,
     ];
   });
 
@@ -70,7 +70,7 @@ const generatePDF = (saleData, shopNameFromState) => {
   doc.setFont(undefined, "bold");
   doc.line(14, finalY + 6, 196, finalY + 6);
   doc.setFontSize(14);
-  doc.text(`Total Amount: $${totalAmount.toFixed(2)}`, 196, finalY + 16, { align: "right" });
+  doc.text(`Total Amount: ₹${totalAmount.toFixed(2)}`, 196, finalY + 16, { align: "right" });
 
   doc.save(`Invoice_${saleId}.pdf`);
 };
@@ -273,7 +273,7 @@ const StaffPanel = () => {
                       return (
                         <tr key={id}>
                           <td>{product.product_name || product.name || "-"}</td>
-                          <td>${Number(product.price || 0).toFixed(2)}</td>
+                          <td>₹{Number(product.price || 0).toFixed(2)}</td>
                           <td className="text-end">
                             <button
                               type="button"
@@ -331,7 +331,7 @@ const StaffPanel = () => {
                             onChange={(e) => updateQuantity(item.product_id, e.target.value)}
                           />
                         </td>
-                        <td>${(Number(item.price) * Number(item.quantity)).toFixed(2)}</td>
+                        <td>₹{(Number(item.price) * Number(item.quantity)).toFixed(2)}</td>
                         <td className="text-end">
                           <button
                             type="button"
@@ -350,7 +350,7 @@ const StaffPanel = () => {
 
             <div className="d-flex justify-content-between align-items-center border-top pt-3">
               <strong>Total</strong>
-              <strong>${runningTotal.toFixed(2)}</strong>
+              <strong>₹{runningTotal.toFixed(2)}</strong>
             </div>
 
             <button
@@ -397,7 +397,7 @@ const StaffPanel = () => {
                     <strong>Date:</strong> {new Date(invoice.date).toLocaleString()}
                   </p>
                   <p className="mb-0">
-                    <strong>Total Amount:</strong> ${Number(invoice.total_amount || 0).toFixed(2)}
+                    <strong>Total Amount:</strong> ₹{Number(invoice.total_amount || 0).toFixed(2)}
                   </p>
                 </div>
                 <div className="modal-footer">

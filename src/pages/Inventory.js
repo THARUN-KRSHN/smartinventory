@@ -12,7 +12,7 @@ const Inventory = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
-  
+
   // Modal & Notification state
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -21,7 +21,7 @@ const Inventory = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
-  
+
   const [form, setForm] = useState({
     product_name: "",
     description: "",
@@ -39,7 +39,7 @@ const Inventory = () => {
       const data = await apiRequest({ method: "GET", url: "/inventory/" });
       const list = Array.isArray(data) ? data : data?.products || [];
       setProducts(list);
-      
+
       const alerts = list.filter(p => Number(p.quantity ?? 0) <= Number(p.threshold ?? 0));
       setLowStockAlerts(alerts);
     } catch (_error) {
@@ -148,8 +148,8 @@ const Inventory = () => {
               <div className="d-flex align-items-center">
                 <div className="bg-white text-danger rounded-circle p-2 me-3 d-flex"><AlertOctagon size={20} /></div>
                 <div>
-                   <h6 className="fw-bold mb-0">Low Stock Alert</h6>
-                   <p className="small mb-0 opacity-75">{lowStockAlerts.length} item{lowStockAlerts.length > 1 ? "s" : ""} falling below threshold.</p>
+                  <h6 className="fw-bold mb-0">Low Stock Alert</h6>
+                  <p className="small mb-0 opacity-75">{lowStockAlerts.length} item{lowStockAlerts.length > 1 ? "s" : ""} falling below threshold.</p>
                 </div>
               </div>
               <button className="btn-close shadow-none" onClick={() => setLowStockAlerts([])}></button>
@@ -160,8 +160,8 @@ const Inventory = () => {
 
       <div className="d-flex justify-content-between align-items-center mb-4 mt-2">
         <div>
-           <h2 className="display-6 fw-bold mb-0" style={{ letterSpacing: "-1px" }}>Inventory</h2>
-           <p className="text-secondary mt-1">Manage and track your products.</p>
+          <h2 className="display-6 fw-bold mb-0" style={{ letterSpacing: "-1px" }}>Inventory</h2>
+          <p className="text-secondary mt-1">Manage and track your products.</p>
         </div>
         <button type="button" className="btn btn-primary rounded-pill px-4 fw-medium shadow-sm d-flex align-items-center" onClick={openAddModal}>
           <Plus size={18} className="me-2" /> Add Product
@@ -210,7 +210,7 @@ const Inventory = () => {
                       <motion.tr initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: index * 0.05 }} key={id} style={{ height: "64px" }}>
                         <td className="ps-4 fw-semibold">{product.product_name || "-"}</td>
                         <td className="text-muted text-truncate" style={{ maxWidth: "200px" }}>{product.description || "-"}</td>
-                        <td>${Number(product.price ?? 0).toFixed(2)}</td>
+                        <td>₹{Number(product.price ?? 0).toFixed(2)}</td>
                         <td><span className="fw-mono">{quantity}</span> <span className="text-muted small">/ {threshold}</span></td>
                         <td>
                           <span className={`badge rounded-pill px-3 py-2 ${isLowStock ? "bg-danger bg-opacity-10 text-danger" : "bg-success bg-opacity-10 text-success"}`}>
