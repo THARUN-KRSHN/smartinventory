@@ -20,6 +20,7 @@ const AdminLayout = ({ children }) => {
   const [setupForm, setSetupForm] = useState({ shop_name: "", category: "", show_price: true, show_stock: true });
   const [setupSaving, setSetupSaving] = useState(false);
   const [userRole, setUserRole] = useState("admin");
+  const [shopCategory, setShopCategory] = useState("General Store");
 
   useEffect(() => {
     try {
@@ -34,12 +35,26 @@ const AdminLayout = ({ children }) => {
       const userStr = localStorage.getItem("user");
       if (userStr) {
         const user = JSON.parse(userStr);
-        // By default, assume the shop name might be passed in user object or fetched.
-        // If they enter Shop details, it overrides this.
         setShopName(user?.shop_name || "Smart Inventory");
+      }
+
+      // Fetch full shop details if ID exists
+      if (shopId && shopId !== "null") {
+        fetchShopInfo(shopId);
       }
     } catch (e) {}
   }, [location.pathname]);
+
+  const fetchShopInfo = async (id) => {
+    try {
+      const data = await apiRequest({ method: "GET", url: `/shops/${id}` });
+      const shop = data?.shop || data;
+      if (shop) {
+        setShopName(shop.shop_name);
+        setShopCategory(shop.category || "General Store");
+      }
+    } catch (error) {}
+  };
 
   const handleLogout = () => {
     localStorage.clear();
@@ -197,6 +212,19 @@ const AdminLayout = ({ children }) => {
 
       {/* Main Content Area */}
       <div className="flex-grow-1 h-100 overflow-auto position-relative" style={{ paddingBottom: "90px" }}>
+        {/* Mobile Top Header */}
+        <div className="d-lg-none bg-white border-bottom p-3 sticky-top z-2 shadow-sm">
+          <div className="d-flex align-items-center">
+            <div className="bg-warning text-dark p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style={{ width: "40px", height: "40px" }}>
+              <Store size={20} />
+            </div>
+            <div className="overflow-hidden">
+              <h6 className="mb-0 fw-bold text-truncate">{shopName}</h6>
+              <small className="text-muted d-block text-truncate" style={{ fontSize: "0.75rem" }}>{shopCategory}</small>
+            </div>
+          </div>
+        </div>
+
         <div className="p-3 p-xl-5 h-100">
           {children}
         </div>

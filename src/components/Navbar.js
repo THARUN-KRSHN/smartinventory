@@ -14,7 +14,7 @@ const Navbar = () => {
   };
 
   return (
-    <BsNavbar bg="light" variant="light" expand="lg" sticky="top">
+    <BsNavbar bg="dark" variant="dark" expand="lg" sticky="top">
       <Container fluid>
         <BsNavbar.Brand as={Link} to="/">
           Smart Inventory

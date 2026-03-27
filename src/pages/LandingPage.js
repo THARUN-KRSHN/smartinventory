@@ -18,6 +18,7 @@ import "bootstrap/dist/css/bootstrap.min.css"; // Ensure bootstrap is loaded
 // ----- COMPONENT: Custom Navbar for Landing Page -----
 const LandingNav = () => {
   const [scrolled, setScrolled] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -72,13 +73,12 @@ const LandingNav = () => {
         <button
           className="navbar-toggler border-0"
           type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#landingNavbar"
+          onClick={() => setIsOpen(!isOpen)}
         >
           <span className="navbar-toggler-icon" style={{ filter: "invert(1)" }} />
         </button>
 
-        <div className="collapse navbar-collapse" id="landingNavbar">
+        <div className={`collapse navbar-collapse ${isOpen ? "show" : ""}`} id="landingNavbar">
           <ul className="navbar-nav ms-auto align-items-center">
             <li className="nav-item">
               <a className="nav-link px-3 text-white" href="#problem">
@@ -196,7 +196,7 @@ const LandingPage = () => {
               <motion.p variants={fadeUp} className="lead mb-3 fw-medium text-white" style={{ opacity: 0.8 }}>
                 Unlock the power of
               </motion.p>
-              <motion.h1 variants={fadeUp} className="display-2 mb-4 text-white" style={{ letterSpacing: "0px", fontSize: "6.5rem", fontWeight: "900", lineHeight: "100px" }}>
+              <motion.h1 variants={fadeUp} className="display-2 mb-4 text-white hero-title" style={{ letterSpacing: "0px", fontWeight: "900" }}>
                 Smart Inventory
               </motion.h1>
               <motion.p variants={fadeUp} className="h4 fw-light mb-5 text-white" style={{ opacity: 0.9 }}>
@@ -341,7 +341,7 @@ const LandingPage = () => {
               className="row g-4 justify-content-center"
             >
               {shops.map((shop, i) => (
-                <motion.div key={i} variants={fadeUp} className="col-12 col-md-6 col-lg-4">
+                <motion.div key={i} variants={fadeUp} className="col-6 col-md-4 col-lg-3">
                   <div className="rounded-card card h-100 shadow-sm border-0">
                     <div className="card-body p-4 d-flex flex-column text-center">
                       <div className="mx-auto mb-4 bg-light p-4 rounded-circle">
@@ -452,6 +452,16 @@ const LandingPage = () => {
           __html: `
           .hover-white { transition: color 0.2s ease; }
           .hover-white:hover { color: #ffffff !important; }
+          .hero-title {
+            font-size: clamp(3rem, 10vw, 6.5rem);
+            line-height: clamp(3.5rem, 11vw, 100px);
+          }
+          @media (max-width: 576px) {
+            .hero-title {
+              font-size: 3.5rem;
+              line-height: 4rem;
+            }
+          }
         `}} />
       </footer>
     </div>

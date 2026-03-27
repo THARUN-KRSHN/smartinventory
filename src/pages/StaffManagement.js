@@ -11,21 +11,21 @@ const getRole = () => {
 
 const StaffManagement = () => {
   const navigate = useNavigate();
-  
+
   // Staff Form State
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  
+
   // List State
   const [staffList, setStaffList] = useState([]);
   const [isLoadingList, setIsLoadingList] = useState(true);
-  
+
   // Action State
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  
+
   // EDIT State
   const [editingId, setEditingId] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -35,12 +35,12 @@ const StaffManagement = () => {
       navigate("/billing", { replace: true });
       return;
     }
-    
+
     let isMounted = true;
     const fetchStaff = async () => {
       setIsLoadingList(true);
       try {
-         // Assuming API is GET /auth/staff
+        // Assuming API is GET /auth/staff
         const data = await apiRequest({ method: "GET", url: "/auth/staff" });
         const staffArray = Array.isArray(data) ? data : data?.staff || [];
         if (isMounted) setStaffList(staffArray);
@@ -101,10 +101,10 @@ const StaffManagement = () => {
         url: `/auth/staff/${editingId}`,
         data: { email, password: password || undefined, full_name: fullName },
       });
-      
+
       const updatedStaff = data?.staff || data?.user || data;
       setStaffList((prev) => prev.map(s => (s.id === editingId ? { ...s, ...updatedStaff, full_name: fullName, email: email } : s)));
-      
+
       setShowEditModal(false);
       setFullName(""); setEmail(""); setPassword("");
       setEditingId(null);
@@ -134,58 +134,58 @@ const StaffManagement = () => {
     try {
       await apiRequest({
         method: "DELETE",
-         // Adjust according to your real URL, e.g. /auth/staff/{id}
+        // Adjust according to your real URL, e.g. /auth/staff/{id}
         url: `/auth/staff/${staffId}`,
       });
       setStaffList((prev) => prev.filter(s => s.id !== staffId));
       showFeedback("Staff removed.");
     } catch (e) {
-       // Mock fallback
-       setStaffList((prev) => prev.filter(s => s.id !== staffId));
-       showFeedback("Staff removed locally. (API DELETE endpoint might not exist)");
+      // Mock fallback
+      setStaffList((prev) => prev.filter(s => s.id !== staffId));
+      showFeedback("Staff removed locally. (API DELETE endpoint might not exist)");
     }
   };
 
   return (
     <div className="d-flex flex-column h-100">
-      
+
       <div className="mb-4">
         <h2 className="display-6 fw-bold mb-0" style={{ letterSpacing: "-1px" }}>Staff Management</h2>
         <p className="text-secondary mt-1">Add and organize your team members.</p>
       </div>
 
       <AnimatePresence>
-        {errorMessage && <motion.div initial={{opacity:0, y:-10}} animate={{opacity:1, y:0}} exit={{opacity:0}} className="alert alert-danger shadow-sm border-0 rounded-4 py-2">{errorMessage}</motion.div>}
-        {successMessage && <motion.div initial={{opacity:0, y:-10}} animate={{opacity:1, y:0}} exit={{opacity:0}} className="alert alert-success shadow-sm border-0 rounded-4 py-2">{successMessage}</motion.div>}
+        {errorMessage && <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="alert alert-danger shadow-sm border-0 rounded-4 py-2">{errorMessage}</motion.div>}
+        {successMessage && <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="alert alert-success shadow-sm border-0 rounded-4 py-2">{successMessage}</motion.div>}
       </AnimatePresence>
 
       <div className="row g-4 flex-grow-1">
-        
+
         {/* ADD FORM */}
-        <div className="col-12 col-xl-4 h-100">
-          <div className="card shadow-sm border-0 rounded-4 h-100 bg-white">
-            <div className="card-body p-4 p-xl-5 d-flex flex-column">
+        <div className="col-12 col-xl-4">
+          <div className="card shadow-sm border-0 rounded-4 bg-white mb-4 mb-xl-0">
+            <div className="card-body p-4 p-md-5 d-flex flex-column">
               <div className="d-flex align-items-center mb-4 pb-2 border-bottom">
-                 <div className="bg-primary bg-opacity-10 p-2 rounded-circle me-3">
-                   <UserPlus size={20} className="text-primary" />
-                 </div>
-                 <h5 className="fw-bold mb-0">Add New Staff</h5>
+                <div className="bg-primary bg-opacity-10 p-2 rounded-circle me-3">
+                  <UserPlus size={20} className="text-primary" />
+                </div>
+                <h5 className="fw-bold mb-0">Add New Staff</h5>
               </div>
 
-              <form onSubmit={handleCreateSubmit} className="flex-grow-1 d-flex flex-column">
-                <div className="mb-4">
+              <form onSubmit={handleCreateSubmit} className="d-flex flex-column">
+                <div className="mb-3">
                   <label className="form-label text-secondary fw-semibold small text-uppercase">Full Name</label>
                   <input type="text" className="form-control form-control-lg bg-light border-0" value={fullName} onChange={(e) => setFullName(e.target.value)} required disabled={isSubmitting} />
                 </div>
-                <div className="mb-4">
+                <div className="mb-3">
                   <label className="form-label text-secondary fw-semibold small text-uppercase">Email Address</label>
                   <input type="email" className="form-control form-control-lg bg-light border-0" value={email} onChange={(e) => setEmail(e.target.value)} required disabled={isSubmitting} />
                 </div>
-                <div className="mb-5">
+                <div className="mb-4">
                   <label className="form-label text-secondary fw-semibold small text-uppercase">Password</label>
                   <input type="password" className="form-control form-control-lg bg-light border-0" value={password} onChange={(e) => setPassword(e.target.value)} required disabled={isSubmitting} />
                 </div>
-                <button type="submit" className="btn btn-primary btn-lg w-100 rounded-pill fw-semibold mt-auto" disabled={isSubmitting}>
+                <button type="submit" className="btn shadow-sm btn-lg w-100 rounded-pill fw-semibold mt-2" disabled={isSubmitting}>
                   {isSubmitting ? "Adding..." : "Create Staff Account"}
                 </button>
               </form>
@@ -196,46 +196,46 @@ const StaffManagement = () => {
         {/* STAFF LIST */}
         <div className="col-12 col-xl-8 h-100">
           <div className="card shadow-sm border-0 rounded-4 h-100 bg-white">
-             <div className="card-body p-0 d-flex flex-column h-100 overflow-hidden">
-                <div className="p-4 p-xl-5 pb-3 d-flex align-items-center justify-content-between border-bottom">
-                   <h5 className="fw-bold mb-0 d-flex align-items-center"><Users size={20} className="text-secondary me-2"/> Active Team Members</h5>
-                   <span className="badge bg-light text-dark border px-3 py-2 rounded-pill">{staffList.length} total</span>
-                </div>
+            <div className="card-body p-0 d-flex flex-column h-100 overflow-hidden">
+              <div className="p-4 p-md-5 pb-3 d-flex align-items-center justify-content-between border-bottom">
+                <h5 className="fw-bold mb-0 d-flex align-items-center"><Users size={20} className="text-secondary me-2" /> Staff Members</h5>
+                <span className="badge bg-light text-dark border px-3 py-2 rounded-pill">{staffList.length}</span>
+              </div>
 
-                <div className="flex-grow-1 overflow-auto p-4 p-xl-5 pt-3">
-                  {isLoadingList ? (
-                    <div className="d-flex justify-content-center align-items-center h-100">
-                      <div className="spinner-border text-primary speed-fast" role="status" />
-                    </div>
-                  ) : staffList.length === 0 ? (
-                     <div className="d-flex flex-column align-items-center justify-content-center h-100 text-muted">
-                        <ShieldAlert size={48} className="mb-3 opacity-25" />
-                        <h6>No staff members found</h6>
-                        <p className="small">Use the panel on the left to add your first staff member.</p>
-                     </div>
-                  ) : (
-                    <div className="d-flex flex-column gap-3">
-                      {staffList.map((staff, idx) => (
-                        <motion.div initial={{opacity:0, x:20}} animate={{opacity:1, x:0}} transition={{delay: idx*0.05}} key={staff.id || idx} className="d-flex align-items-center justify-content-between p-3 border rounded-4 bg-light bg-opacity-50">
-                           <div className="d-flex align-items-center">
-                              <div className="bg-white rounded-circle d-flex align-items-center justify-content-center border shadow-sm me-3" style={{width: "48px", height: "48px"}}>
-                                 <span className="fw-bold fs-5 text-primary">{(staff.full_name || staff.name || staff.email || "S")[0].toUpperCase()}</span>
-                              </div>
-                              <div>
-                                 <h6 className="mb-1 fw-bold">{staff.full_name || staff.name || "-"}</h6>
-                                 <p className="mb-0 text-muted small px-2 py-1 bg-white rounded-pill d-inline-block border">{staff.email}</p>
-                              </div>
-                           </div>
-                           <div className="d-flex gap-2">
-                              <button className="btn btn-white shadow-sm border rounded-circle p-2 text-primary" onClick={() => openEditModal(staff)}><Edit2 size={16}/></button>
-                              <button className="btn btn-white border shadow-sm rounded-circle p-2 text-danger" onClick={() => handleDelete(staff.id)}><Trash2 size={16}/></button>
-                           </div>
-                        </motion.div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-             </div>
+              <div className="flex-grow-1 overflow-auto p-3 p-md-5 pt-3">
+                {isLoadingList ? (
+                  <div className="d-flex justify-content-center align-items-center h-100">
+                    <div className="spinner-border text-primary speed-fast" role="status" />
+                  </div>
+                ) : staffList.length === 0 ? (
+                  <div className="d-flex flex-column align-items-center justify-content-center h-100 text-muted">
+                    <ShieldAlert size={48} className="mb-3 opacity-25" />
+                    <h6>No staff members found</h6>
+                    <p className="small">Use the panel on the left to add your first staff member.</p>
+                  </div>
+                ) : (
+                  <div className="d-flex flex-column gap-3">
+                    {staffList.map((staff, idx) => (
+                      <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.05 }} key={staff.id || idx} className="d-flex flex-wrap align-items-center justify-content-between p-3 border rounded-4 bg-light bg-opacity-50 gap-3">
+                        <div className="d-flex align-items-center flex-grow-1">
+                          <div className="bg-white rounded-circle d-flex align-items-center justify-content-center border shadow-sm me-3 flex-shrink-0" style={{ width: "48px", height: "48px" }}>
+                            <span className="fw-bold fs-5 text-primary">{(staff.full_name || staff.name || staff.email || "S")[0].toUpperCase()}</span>
+                          </div>
+                          <div className="overflow-hidden">
+                            <h6 className="mb-1 fw-bold text-truncate">{staff.full_name || staff.name || "-"}</h6>
+                            <div className="text-muted small px-2 py-1 bg-white rounded-pill d-inline-block border text-truncate max-w-100">{staff.email}</div>
+                          </div>
+                        </div>
+                        <div className="d-flex gap-2">
+                          <button className="btn btn-white shadow-sm border rounded-circle p-2 text-primary" onClick={() => openEditModal(staff)}><Edit2 size={16} /></button>
+                          <button className="btn btn-white border shadow-sm rounded-circle p-2 text-danger" onClick={() => handleDelete(staff.id)}><Trash2 size={16} /></button>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>

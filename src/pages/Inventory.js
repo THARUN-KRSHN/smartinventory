@@ -163,7 +163,7 @@ const Inventory = () => {
           <h2 className="display-6 fw-bold mb-0" style={{ letterSpacing: "-1px" }}>Inventory</h2>
           <p className="text-secondary mt-1">Manage and track your products.</p>
         </div>
-        <button type="button" className="btn btn-primary rounded-pill px-4 fw-medium shadow-sm d-flex align-items-center" onClick={openAddModal}>
+        <button type="button" className="btn  rounded-pill px-4 fw-medium shadow-sm d-flex align-items-center" onClick={openAddModal}>
           <Plus size={18} className="me-2" /> Add Product
         </button>
       </div>
@@ -176,64 +176,123 @@ const Inventory = () => {
             <div className="spinner-border text-primary" role="status" />
           </div>
         ) : (
-          <div className="table-responsive h-100">
-            <table className="table table-hover align-middle mb-0">
-              <thead className="table-light">
-                <tr>
-                  <th className="ps-4 py-3 text-uppercase text-secondary" style={{ fontSize: "0.8rem", letterSpacing: "1px" }}>Product</th>
-                  <th className="py-3 text-uppercase text-secondary" style={{ fontSize: "0.8rem", letterSpacing: "1px" }}>Description</th>
-                  <th className="py-3 text-uppercase text-secondary" style={{ fontSize: "0.8rem", letterSpacing: "1px" }}>Price</th>
-                  <th className="py-3 text-uppercase text-secondary" style={{ fontSize: "0.8rem", letterSpacing: "1px" }}>Stock</th>
-                  <th className="py-3 text-uppercase text-secondary" style={{ fontSize: "0.8rem", letterSpacing: "1px" }}>Status</th>
-                  <th className="pe-4 py-3 text-end text-uppercase text-secondary" style={{ fontSize: "0.8rem", letterSpacing: "1px" }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.length === 0 ? (
+          <>
+            {/* Desktop Table View */}
+            <div className="table-responsive d-none d-md-block h-100">
+              <table className="table table-hover align-middle mb-0">
+                <thead className="table-light">
                   <tr>
-                    <td colSpan={6} className="text-center text-muted py-5">
-                      <div className="d-flex flex-column align-items-center justify-content-center">
-                        <div className="bg-light p-4 rounded-circle mb-3"><Package size={32} className="text-secondary" /></div>
-                        <h5 className="fw-bold text-dark">No products found</h5>
-                        <p className="mb-0">Click "Add Product" to get started.</p>
-                      </div>
-                    </td>
+                    <th className="ps-4 py-3 text-uppercase text-secondary" style={{ fontSize: "0.8rem", letterSpacing: "1px" }}>Product</th>
+                    <th className="py-3 text-uppercase text-secondary" style={{ fontSize: "0.8rem", letterSpacing: "1px" }}>Description</th>
+                    <th className="py-3 text-uppercase text-secondary" style={{ fontSize: "0.8rem", letterSpacing: "1px" }}>Price</th>
+                    <th className="py-3 text-uppercase text-secondary" style={{ fontSize: "0.8rem", letterSpacing: "1px" }}>Stock</th>
+                    <th className="py-3 text-uppercase text-secondary" style={{ fontSize: "0.8rem", letterSpacing: "1px" }}>Status</th>
+                    <th className="pe-4 py-3 text-end text-uppercase text-secondary" style={{ fontSize: "0.8rem", letterSpacing: "1px" }}>Actions</th>
                   </tr>
-                ) : (
-                  products.map((product, index) => {
+                </thead>
+                <tbody>
+                  {products.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="text-center text-muted py-5">
+                        <div className="d-flex flex-column align-items-center justify-content-center">
+                          <div className="bg-light p-4 rounded-circle mb-3"><Package size={32} className="text-secondary" /></div>
+                          <h5 className="fw-bold text-dark">No products found</h5>
+                          <p className="mb-0">Click "Add Product" to get started.</p>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    products.map((product, index) => {
+                      const id = product.product_id ?? product.id ?? index;
+                      const quantity = Number(product.quantity ?? 0);
+                      const threshold = Number(product.threshold ?? 0);
+                      const isLowStock = quantity <= threshold;
+
+                      return (
+                        <motion.tr initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: index * 0.05 }} key={id} style={{ height: "64px" }}>
+                          <td className="ps-4 fw-semibold">{product.product_name || "-"}</td>
+                          <td className="text-muted text-truncate" style={{ maxWidth: "200px" }}>{product.description || "-"}</td>
+                          <td>₹{Number(product.price ?? 0).toFixed(2)}</td>
+                          <td><span className="fw-mono">{quantity}</span> <span className="text-muted small">/ {threshold}</span></td>
+                          <td>
+                            <span className={`badge rounded-pill px-3 py-2 ${isLowStock ? "bg-danger bg-opacity-10 text-danger" : "bg-success bg-opacity-10 text-success"}`}>
+                              {isLowStock ? "Low Stock" : "In Stock"}
+                            </span>
+                          </td>
+                          <td className="pe-4 text-end">
+                            <button className="btn btn-sm btn-light rounded-circle me-2 p-2 shadow-sm" onClick={() => openEditModal(product)}>
+                              <Edit2 size={16} className="text-primary" />
+                            </button>
+                            {isAdmin && (
+                              <button className="btn btn-sm btn-light rounded-circle p-2 shadow-sm" onClick={() => handleDelete(id)} disabled={deleteId === id}>
+                                <Trash2 size={16} className={deleteId === id ? "text-muted" : "text-danger"} />
+                              </button>
+                            )}
+                          </td>
+                        </motion.tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="d-md-none overflow-auto h-100 p-3">
+              {products.length === 0 ? (
+                <div className="d-flex flex-column align-items-center justify-content-center py-5 text-muted">
+                  <div className="bg-light p-4 rounded-circle mb-3"><Package size={32} /></div>
+                  <h6 className="fw-bold">No products found</h6>
+                </div>
+              ) : (
+                <div className="row g-3">
+                  {products.map((product, index) => {
                     const id = product.product_id ?? product.id ?? index;
                     const quantity = Number(product.quantity ?? 0);
                     const threshold = Number(product.threshold ?? 0);
                     const isLowStock = quantity <= threshold;
 
                     return (
-                      <motion.tr initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: index * 0.05 }} key={id} style={{ height: "64px" }}>
-                        <td className="ps-4 fw-semibold">{product.product_name || "-"}</td>
-                        <td className="text-muted text-truncate" style={{ maxWidth: "200px" }}>{product.description || "-"}</td>
-                        <td>₹{Number(product.price ?? 0).toFixed(2)}</td>
-                        <td><span className="fw-mono">{quantity}</span> <span className="text-muted small">/ {threshold}</span></td>
-                        <td>
-                          <span className={`badge rounded-pill px-3 py-2 ${isLowStock ? "bg-danger bg-opacity-10 text-danger" : "bg-success bg-opacity-10 text-success"}`}>
-                            {isLowStock ? "Low Stock" : "In Stock"}
-                          </span>
-                        </td>
-                        <td className="pe-4 text-end">
-                          <button className="btn btn-sm btn-light rounded-circle me-2 p-2 shadow-sm" onClick={() => openEditModal(product)}>
-                            <Edit2 size={16} className="text-primary" />
-                          </button>
-                          {isAdmin && (
-                            <button className="btn btn-sm btn-light rounded-circle p-2 shadow-sm" onClick={() => handleDelete(id)} disabled={deleteId === id}>
-                              <Trash2 size={16} className={deleteId === id ? "text-muted" : "text-danger"} />
+                      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} key={id} className="col-12">
+                        <div className="card shadow-sm border p-3 rounded-4">
+                          <div className="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                              <h6 className="fw-bold mb-0">{product.product_name || "-"}</h6>
+                              <small className="text-muted">{product.description || "No description"}</small>
+                            </div>
+                            <span className={`badge rounded-pill px-2 py-1 ${isLowStock ? "bg-danger bg-opacity-10 text-danger" : "bg-success bg-opacity-10 text-success"}`}>
+                              {isLowStock ? "Low" : "In Stock"}
+                            </span>
+                          </div>
+                          <div className="row g-2 mt-2">
+                            <div className="col-6">
+                              <small className="text-secondary d-block">Price</small>
+                              <span className="fw-bold fs-5">₹{Number(product.price ?? 0).toFixed(2)}</span>
+                            </div>
+                            <div className="col-6">
+                              <small className="text-secondary d-block">Stock</small>
+                              <span className="fw-bold fs-5">{quantity}</span>
+                              <small className="text-muted ms-1">/ {threshold}</small>
+                            </div>
+                          </div>
+                          <div className="d-flex justify-content-end gap-2 mt-3 pt-2 border-top">
+                            <button className="btn btn-sm btn-light border rounded-pill px-3" onClick={() => openEditModal(product)}>
+                              <Edit2 size={14} className="text-primary me-1" /> Edit
                             </button>
-                          )}
-                        </td>
-                      </motion.tr>
+                            {isAdmin && (
+                              <button className="btn btn-sm btn-light border rounded-pill px-3" onClick={() => handleDelete(id)} disabled={deleteId === id}>
+                                <Trash2 size={14} className="text-danger me-1" /> Delete
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </motion.div>
                     );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
+                  })}
+                </div>
+              )}
+            </div>
+          </>
         )}
       </div>
 
@@ -275,7 +334,7 @@ const Inventory = () => {
                   </div>
                   <div className="card-footer bg-light border-top-0 p-4 pt-3 d-flex justify-content-end gap-2">
                     <button type="button" className="btn btn-outline-secondary rounded-pill px-4" onClick={() => setShowModal(false)} disabled={isSubmitting}>Cancel</button>
-                    <button type="submit" className="btn btn-primary rounded-pill px-4" disabled={isSubmitting}>
+                    <button type="submit" className="btn  rounded-pill px-4 shadow-sm" disabled={isSubmitting}>
                       {isSubmitting ? "Saving..." : isEditing ? "Update Product" : "Save Product"}
                     </button>
                   </div>
