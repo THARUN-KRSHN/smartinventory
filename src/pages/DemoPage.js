@@ -76,7 +76,7 @@ const RegisterScene = () => (
       <div className="bg-white border rounded p-2 text-dark fw-medium shadow-sm">Electronics</div>
     </div>
     <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.3 }} className="mt-auto">
-      <button className="btn btn-primary w-100 rounded-pill fw-bold shadow">Create Shop</button>
+      <button className="btn  w-100 rounded-pill fw-bold shadow">Create Shop</button>
     </motion.div>
   </div>
 );
@@ -369,11 +369,11 @@ const DemoPage = () => {
       </header>
 
       {/* MAIN CONTENT */}
-      <div className="container" style={{ paddingTop: '100px', height: '100vh', minHeight: '800px' }}>
-        <div className="row align-items-center h-100 pb-5">
+      <div className="container px-4 px-md-3" style={{ paddingTop: '100px', minHeight: '100vh', paddingBottom: '100px' }}>
+        <div className="row align-items-center">
 
           {/* LEFT: Phone Mockup */}
-          <div className="col-12 col-lg-6 d-flex justify-content-center position-relative mb-5 mb-lg-0">
+          <div className="col-12 col-lg-6 d-flex justify-content-center position-relative mb-5 mb-lg-0 demo-phone-container">
             <div className="position-relative" style={{ zIndex: 10 }}>
 
               {/* Floating Badge */}
@@ -417,17 +417,17 @@ const DemoPage = () => {
                 transition={{ duration: 0.4 }}
                 className="d-flex flex-column justify-content-center"
               >
-                <div className="d-flex align-items-center mb-1">
-                  <h1 className="fw-light text-primary" style={{ fontSize: '5rem', letterSpacing: '-2px', opacity: 0.2 }}>
-                    0{step.id}
-                  </h1>
-                  <div className="ms-4 bg-primary" style={{ height: '1px', width: '120px', opacity: 0.2 }}></div>
-                </div>
+                  <div className="d-flex align-items-center mb-1">
+                    <h1 className="fw-light text-primary demo-step-number" style={{ fontSize: '5rem', letterSpacing: '-2px', opacity: 0.2 }}>
+                      0{step.id}
+                    </h1>
+                    <div className="ms-4 bg-primary d-none d-md-block" style={{ height: '1px', width: '120px', opacity: 0.2 }}></div>
+                  </div>
 
-                <h2 className="display-4 fw-bolder mb-3 text-dark" style={{ letterSpacing: '-1px' }}>{step.title}</h2>
-                <p className="lead text-muted mb-5" style={{ maxWidth: '450px', fontSize: '1.25rem', fontStyle: 'italic', opacity: 0.8 }}>
-                  "{step.subtitle}"
-                </p>
+                  <h2 className="display-4 fw-bolder mb-3 text-dark demo-step-title" style={{ letterSpacing: '-1px' }}>{step.title}</h2>
+                  <p className="lead text-muted mb-4 mb-lg-5 demo-step-subtitle" style={{ maxWidth: '450px', fontSize: '1.25rem', fontStyle: 'italic', opacity: 0.8 }}>
+                    "{step.subtitle}"
+                  </p>
 
                 <div className="d-flex align-items-center gap-3 mb-5">
                   <button
@@ -439,7 +439,7 @@ const DemoPage = () => {
                     <ArrowLeft size={20} />
                   </button>
                   <button
-                    className="btn btn-primary rounded-pill px-5 shadow fw-bold d-flex align-items-center justify-content-center gap-2"
+                    className="btn  rounded-pill px-5 shadow fw-bold d-flex align-items-center justify-content-center gap-2"
                     style={{ height: '50px', fontSize: '1.1rem' }}
                     onClick={nextStep}
                   >
@@ -477,6 +477,26 @@ const DemoPage = () => {
           0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
           70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
           100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        @media (max-width: 991px) {
+          .demo-phone-container {
+             order: 2;
+          }
+          .phone-frame {
+             transform: scale(0.85);
+             margin-top: -50px;
+             margin-bottom: -50px;
+          }
+          .demo-step-number { font-size: 3.5rem !important; }
+          .demo-step-title { font-size: 2.25rem !important; }
+          .demo-step-subtitle { font-size: 1rem !important; }
+        }
+        @media (max-width: 576px) {
+          .phone-frame {
+             transform: scale(0.7);
+             margin-top: -100px;
+             margin-bottom: -100px;
+          }
         }
       `}} />
     </div>

@@ -22,6 +22,7 @@ const Billing = () => {
    const [invoiceData, setInvoiceData] = useState(null);
    const [isGenerating, setIsGenerating] = useState(false);
    const [isDraftPreview, setIsDraftPreview] = useState(false);
+   const [isCatalogOpen, setIsCatalogOpen] = useState(false);
 
    const user = JSON.parse(localStorage.getItem("user") || "{}");
    const shopName = user?.shop_name || localStorage.getItem("shop_name") || "Smart Inventory";
@@ -309,8 +310,21 @@ const Billing = () => {
          {/* RIGHT COLUMN: Draft Invoice Panel */}
          <div className="col-12 col-xl-5 h-100 bg-white border-start position-relative shadow-lg d-flex flex-column z-1 pt-xl-0 pt-4">
 
+            {/* Mobile Header Overrides */}
+            <div className="d-xl-none p-4 pb-0 bg-white sticky-top z-3 border-bottom shadow-sm">
+               <div className="d-flex justify-content-between align-items-center mb-3">
+                  <h4 className="fw-bolder m-0">Billing</h4>
+                  <button 
+                     className="btn btn-primary rounded-pill px-4 py-2 fw-bold d-flex align-items-center gap-2 shadow-sm"
+                     onClick={() => setIsCatalogOpen(true)}
+                  >
+                     <ShoppingBag size={18} /> Browse Catalog
+                  </button>
+               </div>
+            </div>
+
             {/* Header */}
-            <div className="p-4 p-md-5 pb-3 border-bottom bg-white z-2 sticky-top">
+            <div className="p-4 p-md-5 pb-3 border-bottom bg-white z-2 d-none d-xl-block">
                <div className="d-flex justify-content-between align-items-start mb-1">
                   <div>
                      <p className="text-muted small mb-0 fst-italic">Locker Engine</p>
@@ -449,6 +463,19 @@ const Billing = () => {
                   #invoice-print-area { position: absolute; left: 0; top: 0; width: 100%; border: none !important; box-shadow: none !important; }
                   .no-print { display: none !important; }
                 }
+                @media (max-width: 576px) {
+                  #invoice-print-area {
+                    transform: scale(0.9);
+                    transform-origin: top center;
+                    width: 111.11%; /* Compensate for 0.9 scale to fill width */
+                    margin-left: -5.55%;
+                  }
+                  .table th, .table td {
+                    padding: 0.5rem 0.2rem !important;
+                    font-size: 0.85rem;
+                  }
+                  h2 { font-size: 1.5rem !important; }
+                }
               `}} />
 
                   {/* Close Button */}
@@ -533,6 +560,61 @@ const Billing = () => {
                </motion.div>
             </div>
          )}
+         {/* Mobile Catalog Overlay */}
+         <AnimatePresence>
+            {isCatalogOpen && (
+               <motion.div 
+                  initial={{ y: "100%" }}
+                  animate={{ y: 0 }}
+                  exit={{ y: "100%" }}
+                  transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                  className="position-fixed top-0 start-0 w-100 h-100 z-3 bg-light d-flex flex-column"
+               >
+                  <div className="p-4 border-bottom bg-white d-flex justify-content-between align-items-center shadow-sm">
+                     <h4 className="fw-bolder m-0">Product Catalog</h4>
+                     <button className="btn btn-light rounded-circle p-2" onClick={() => setIsCatalogOpen(false)}>
+                        <X size={24} />
+                     </button>
+                  </div>
+                  <div className="p-4 bg-white">
+                     <div className="position-relative">
+                        <input 
+                           type="text" 
+                           className="form-control rounded-pill ps-4 py-2 bg-light border-0 shadow-none" 
+                           placeholder="Search inventory..." 
+                           value={searchTerm} 
+                           onChange={e => setSearchTerm(e.target.value)} 
+                        />
+                     </div>
+                  </div>
+                  <div className="flex-grow-1 overflow-auto p-4 pt-2">
+                     <div className="row g-3">
+                        {filteredProducts.map(p => (
+                           <div key={p.product_id ?? p.id} className="col-6">
+                              <motion.div 
+                                 whileTap={{ scale: 0.95 }} 
+                                 className="card h-100 border-0 shadow-sm rounded-4" 
+                                 onClick={() => {
+                                    handleAddFromCard(p);
+                                    setIsCatalogOpen(false);
+                                 }}
+                              >
+                                 <div className="card-body p-3">
+                                    <h6 className="fw-bold mb-1 text-truncate small">{p.product_name}</h6>
+                                    <div className="d-flex justify-content-between align-items-center mt-2">
+                                       <span className="text-primary fw-bold small">₹{parseFloat(p.price).toFixed(2)}</span>
+                                       <span className="badge bg-light text-dark rounded-pill fw-normal" style={{ fontSize: '0.65rem' }}>{p.quantity} left</span>
+                                    </div>
+                                 </div>
+                              </motion.div>
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+               </motion.div>
+            )}
+         </AnimatePresence>
+
       </div>
    );
 };

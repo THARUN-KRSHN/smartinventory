@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { apiRequest } from "../api/api";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
   CheckCircle2,
@@ -12,13 +12,103 @@ import {
   Smartphone,
   Store,
   Zap,
+  Menu,
+  X,
+  Globe,
+  Star
 } from "lucide-react";
 import "bootstrap/dist/css/bootstrap.min.css"; // Ensure bootstrap is loaded
 
+// --- COMPONENT: Curtain Menu Overlay ---
+const CurtainMenu = ({ isOpen, onClose }) => {
+  const navLinks = [
+    { name: "Problem", href: "#problem" },
+    { name: "Solution", href: "#solution" },
+    { name: "Features", href: "#features" },
+    { name: "Shops", href: "#shops" },
+    { name: "FAQ", href: "#faq" },
+    { name: "Login", href: "/login", isButton: true },
+  ];
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ y: "-100%" }}
+          animate={{ y: 0 }}
+          exit={{ y: "-100%" }}
+          transition={{ type: "spring", damping: 25, stiffness: 120 }}
+          className="fixed-top w-100 vh-100 d-flex flex-column"
+          style={{ zIndex: 2000, background: "linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)" }}
+        >
+          {/* Menu Header (Logo + Close) */}
+          <div className="container d-flex justify-content-between align-items-center py-4 px-4">
+            <div className="d-flex align-items-center gap-2">
+              <div className="rounded-circle bg-white" style={{ width: "12px", height: "12px" }}></div>
+              <div className="fw-bolder text-white fs-4" style={{ letterSpacing: "1px" }}>SMART INVENTORY</div>
+            </div>
+            <button
+              onClick={onClose}
+              className="btn btn-white rounded-circle shadow-lg p-3 d-flex align-items-center justify-content-center"
+              style={{ width: "50px", height: "50px", border: "none", backgroundColor: "rgba(255,255,255,0.2)", color: "white" }}
+            >
+              <X size={24} />
+            </button>
+          </div>
+
+          {/* Menu Links */}
+          <div className="container flex-grow-1 d-flex flex-column justify-content-center align-items-center text-center">
+            <div className="d-flex flex-column gap-1">
+              {navLinks.map((link, idx) => (
+                <motion.div
+                  key={link.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + idx * 0.1 }}
+                >
+                  {link.isButton ? (
+                    <Link
+                      to={link.href}
+                      className="btn btn-white rounded-pill px-5 py-3 fw-bold fs-4 shadow-lg text-primary mt-4"
+                      style={{ backgroundColor: "white" }}
+                      onClick={onClose}
+                    >
+                      {link.name}
+                    </Link>
+                  ) : (
+                    <a
+                      href={link.href}
+                      className="text-white text-decoration-none display-3 fw-bold hover-white transition-all d-block py-2"
+                      style={{ letterSpacing: "-1px" }}
+                      onClick={onClose}
+                    >
+                      {link.name}
+                    </a>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          {/* Social / Info Footer */}
+          <div className="container py-5 px-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-4 text-white opacity-75 small">
+            <div>Reach out to us at: <a href="mailto:support@smartinventory.com" className="text-white fw-bold">support@smartinventory.com</a></div>
+            <div className="d-flex gap-4 fs-5">
+              <Globe size={20} />
+              <Star size={20} />
+              <Zap size={20} />
+            </div>
+            <div>© 2026 Smart Inventory. All rights reserved.</div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
 // ----- COMPONENT: Custom Navbar for Landing Page -----
-const LandingNav = () => {
+const LandingNav = ({ onOpenMenu }) => {
   const [scrolled, setScrolled] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -30,7 +120,7 @@ const LandingNav = () => {
 
   return (
     <nav
-      className={`navbar navbar-expand-lg fixed-top transition-all ${scrolled ? "shadow-sm py-2" : "bg-transparent py-4"}`}
+      className={`navbar fixed-top transition-all ${scrolled ? "shadow-sm py-2" : "bg-transparent py-4"}`}
       style={{
         transition: "all 0.3s ease",
         zIndex: 1000,
@@ -39,7 +129,7 @@ const LandingNav = () => {
         borderBottom: scrolled ? "1px solid rgba(255,255,255,0.1)" : "none"
       }}
     >
-      <div className="container">
+      <div className="container d-flex justify-content-between align-items-center px-4">
         <a className="navbar-brand d-flex align-items-center" href="#hero">
           <div
             className="brand-dot me-2"
@@ -50,68 +140,16 @@ const LandingNav = () => {
               backgroundColor: "#ffffff",
             }}
           ></div>
-          <span
-            className="fw-bolder"
-            style={{
-              color: "#ffffff",
-              letterSpacing: "1px",
-            }}
-          >
-            SMART
-          </span>
-          <span
-            className="fw-light ms-1"
-            style={{
-              color: "#ffffff",
-              letterSpacing: "1px",
-            }}
-          >
-            INVENTORY
-          </span>
+          <span className="fw-bolder text-white" style={{ letterSpacing: "1px" }}>SMART</span>
+          <span className="fw-light ms-1 text-white" style={{ letterSpacing: "1px" }}>INVENTORY</span>
         </a>
 
         <button
-          className="navbar-toggler border-0"
-          type="button"
-          onClick={() => setIsOpen(!isOpen)}
+          className="btn p-2 border-0 shadow-none text-white d-flex align-items-center justify-content-center"
+          onClick={onOpenMenu}
         >
-          <span className="navbar-toggler-icon" style={{ filter: "invert(1)" }} />
+          <Menu size={32} />
         </button>
-
-        <div className={`collapse navbar-collapse ${isOpen ? "show" : ""}`} id="landingNavbar">
-          <ul className="navbar-nav ms-auto align-items-center">
-            <li className="nav-item">
-              <a className="nav-link px-3 text-white" href="#problem">
-                Problem
-              </a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link px-3 text-white" href="#solution">
-                Solution
-              </a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link px-3 text-white" href="#features">
-                Features
-              </a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link px-3 text-white" href="#shops">
-                Shops
-              </a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link px-3 text-white" href="#faq">
-                FAQ
-              </a>
-            </li>
-            <li className="nav-item ms-lg-3 mt-3 mt-lg-0">
-              <Link to="/login" className="btn btn-super-outline rounded-pill px-4">
-                Login
-              </Link>
-            </li>
-          </ul>
-        </div>
       </div>
     </nav>
   );
@@ -147,6 +185,7 @@ const FaqItem = ({ question, answer }) => {
 // ----- MAIN LANDING PAGE -----
 const LandingPage = () => {
   const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [shops, setShops] = useState([]);
   const [loadingShops, setLoadingShops] = useState(true);
   const [error, setError] = useState("");
@@ -186,7 +225,8 @@ const LandingPage = () => {
 
   return (
     <div style={{ backgroundColor: "var(--bg-light)", overflowX: "hidden" }}>
-      <LandingNav />
+      <CurtainMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+      <LandingNav onOpenMenu={() => setIsMenuOpen(true)} />
 
       {/* 1. HERO SECTION */}
       <section id="hero" className="landing-hero d-flex align-items-center justify-content-center text-center">
