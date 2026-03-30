@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { apiRequest } from "../api/api";
-import { Plus, Edit2, Trash2, Package, AlertOctagon } from "lucide-react";
+import { Plus, Edit2, Trash2, Package, AlertOctagon, Upload, Link as LinkIcon, Image as ImageIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const getRole = () => {
@@ -28,7 +28,11 @@ const Inventory = () => {
     price: "",
     quantity: "",
     threshold: "",
+    image: "",
   });
+
+  const [uploadMode, setUploadMode] = useState("link");
+
 
   const isAdmin = useMemo(() => getRole() === "admin", []);
 
@@ -59,9 +63,10 @@ const Inventory = () => {
   };
 
   const resetForm = () => {
-    setForm({ product_name: "", description: "", price: "", quantity: "", threshold: "" });
+    setForm({ product_name: "", description: "", price: "", quantity: "", threshold: "", image: "" });
     setIsEditing(false);
     setEditingId(null);
+    setUploadMode("link");
   };
 
   const openAddModal = () => {
@@ -76,9 +81,11 @@ const Inventory = () => {
       price: product.price || "",
       quantity: product.quantity || "",
       threshold: product.threshold || "",
+      image: product.image || "",
     });
     setEditingId(product.product_id ?? product.id);
     setIsEditing(true);
+    setUploadMode("link");
     setShowModal(true);
   };
 
@@ -94,6 +101,7 @@ const Inventory = () => {
         price: Number(form.price),
         quantity: Number(form.quantity),
         threshold: Number(form.threshold),
+        image: form.image || null,
       };
 
       if (isEditing) {
@@ -135,6 +143,32 @@ const Inventory = () => {
       setErrorMessage("Unable to delete this product right now.");
     } finally {
       setDeleteId(null);
+    }
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    setIsSubmitting(true);
+    try {
+      const resp = await apiRequest({
+        method: "POST",
+        url: "/shops/upload/image",
+        data: formData,
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      if (resp && resp.url) {
+        setForm((prev) => ({ ...prev, image: resp.url }));
+        setErrorMessage("");
+      }
+    } catch (err) {
+      setErrorMessage("Failed to upload image.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -210,7 +244,16 @@ const Inventory = () => {
 
                       return (
                         <motion.tr initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: index * 0.05 }} key={id} style={{ height: "64px" }}>
-                          <td className="ps-4 fw-semibold">{product.product_name || "-"}</td>
+                          <td className="ps-4 fw-semibold d-flex align-items-center gap-3">
+                            {product.image ? (
+                              <img src={product.image.startsWith('/') ? `http://localhost:8000${product.image}` : product.image} alt={product.product_name} style={{width: '32px', height: '32px', objectFit: 'cover', borderRadius: '6px'}} />
+                            ) : (
+                              <div className="bg-light rounded d-flex justify-content-center align-items-center text-muted" style={{width: '32px', height: '32px'}}>
+                                <Package size={16} />
+                              </div>
+                            )}
+                            {product.product_name || "-"}
+                          </td>
                           <td className="text-muted text-truncate" style={{ maxWidth: "200px" }}>{product.description || "-"}</td>
                           <td>₹{Number(product.price ?? 0).toFixed(2)}</td>
                           <td><span className="fw-mono">{quantity}</span> <span className="text-muted small">/ {threshold}</span></td>
@@ -317,6 +360,21 @@ const Inventory = () => {
                       <label className="form-label text-secondary fw-semibold small">Description</label>
                       <textarea name="description" className="form-control bg-light border-0 py-2 px-3" rows="2" value={form.description} onChange={handleChange} disabled={isSubmitting} />
                     </div>
+                    
+                    <div className="mb-3 bg-light p-3 rounded-4">
+                      <label className="form-label text-secondary fw-semibold small d-block mb-2">Product Image</label>
+                      <div className="d-flex mb-3 gap-2">
+                        <button type="button" className={`btn btn-sm ${uploadMode === 'link' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setUploadMode('link')}><LinkIcon size={14} className="me-1"/> Link</button>
+                        <button type="button" className={`btn btn-sm ${uploadMode === 'upload' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setUploadMode('upload')}><Upload size={14} className="me-1"/> Upload</button>
+                      </div>
+                      {uploadMode === 'link' ? (
+                        <input type="text" name="image" className="form-control bg-white border-0" placeholder="https://example.com/product.png" value={form.image} onChange={handleChange} disabled={isSubmitting} />
+                      ) : (
+                         <input type="file" accept="image/*" className="form-control bg-white border-0" onChange={handleImageUpload} disabled={isSubmitting} />
+                      )}
+                      {form.image && <div className="mt-3"><img src={form.image.startsWith('/') ? `http://localhost:8000${form.image}` : form.image} alt="Product Preview" className="rounded shadow-sm bg-white" style={{height: "60px", width: "60px", objectFit: "contain"}} /></div>}
+                    </div>
+
                     <div className="row g-3">
                       <div className="col-12 col-md-4">
                         <label className="form-label text-secondary fw-semibold small">Price</label>

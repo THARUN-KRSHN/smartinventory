@@ -383,21 +383,37 @@ const LandingPage = () => {
               {shops.map((shop, i) => (
                 <motion.div key={i} variants={fadeUp} className="col-6 col-md-4 col-lg-3">
                   <div className="rounded-card card h-100 shadow-sm border-0">
-                    <div className="card-body p-4 d-flex flex-column text-center">
-                      <div className="mx-auto mb-4 bg-light p-4 rounded-circle">
-                        <Store size={40} className="text-primary" />
+                    <div className="card-body p-0 d-flex flex-column text-center position-relative">
+                      {/* Cover Image Header */}
+                      <div className="w-100 bg-secondary" style={{height: "100px", borderTopLeftRadius: "var(--bs-card-border-radius, 1rem)", borderTopRightRadius: "var(--bs-card-border-radius, 1rem)", overflow: "hidden"}}>
+                        {shop.cover_image ? (
+                          <img src={shop.cover_image.startsWith('/') ? `http://localhost:8000${shop.cover_image}` : shop.cover_image} alt="cover" className="w-100 h-100" style={{objectFit: "cover", opacity: 0.9}} />
+                        ) : (
+                          <div className="w-100 h-100 bg-primary opacity-25"></div>
+                        )}
                       </div>
-                      <h4 className="card-title fw-bold mb-2">{shop.shop_name}</h4>
-                      <p className="card-text text-muted mb-4">
-                        {shop.category || "General Store"}
-                      </p>
+                      
+                      {/* Logo (overlapping) */}
+                      <div className="mx-auto bg-white p-1 rounded-circle shadow-sm d-flex justify-content-center align-items-center position-absolute start-50 translate-middle-x" style={{ width: "70px", height: "70px", top: "65px", zIndex: 2 }}>
+                        {shop.logo ? (
+                           <img src={shop.logo.startsWith('/') ? `http://localhost:8000${shop.logo}` : shop.logo} alt={shop.shop_name} className="w-100 h-100 overflow-hidden" style={{objectFit: "contain", borderRadius: "50%"}} />
+                        ) : (
+                           <div className="bg-light w-100 h-100 rounded-circle d-flex align-items-center justify-content-center"><Store size={32} className="text-primary" /></div>
+                        )}
+                      </div>
 
-                      <button
-                        className="btn btn-outline-primary rounded-pill mt-auto w-100 d-flex align-items-center justify-content-center gap-2"
-                        onClick={() => navigate(`/public/shop/${encodeURIComponent(shop.shop_name)}/inventory`)}
-                      >
-                        Visit Shop <ArrowRight size={16} />
-                      </button>
+                      <div className="pt-5 px-4 pb-4 mt-3 d-flex flex-column flex-grow-1">
+                        <h4 className="card-title fw-bold mb-2 text-truncate" title={shop.shop_name}>{shop.shop_name}</h4>
+                        <p className="card-text text-muted mb-4 text-truncate">
+                          {shop.category || "General Store"}
+                        </p>
+                        <button
+                          className="btn btn-outline-primary rounded-pill mt-auto w-100 d-flex align-items-center justify-content-center gap-2"
+                          onClick={() => navigate(`/public/shop/${encodeURIComponent(shop.shop_name)}/inventory`)}
+                        >
+                          Visit Shop <ArrowRight size={16} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </motion.div>

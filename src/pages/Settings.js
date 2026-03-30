@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { apiRequest } from "../api/api";
-import { Settings as SettingsIcon, Store, Globe, CheckCircle, User, Mail, Shield, LogOut } from "lucide-react";
+import { Settings as SettingsIcon, Store, Globe, CheckCircle, User, Mail, Shield, LogOut, Upload, Link as LinkIcon, Image as ImageIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 
@@ -16,7 +16,12 @@ const Settings = () => {
     category: "",
     show_price: true,
     show_stock: true,
+    logo: "",
+    cover_image: "",
   });
+
+  const [uploadMode, setUploadMode] = useState({ logo: "link", cover: "link" });
+
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -41,6 +46,8 @@ const Settings = () => {
           category: shop.category || "",
           show_price: shop.show_price !== false,
           show_stock: shop.show_stock !== false,
+          logo: shop.logo || "",
+          cover_image: shop.cover_image || "",
         });
       }
     } catch (e) {
@@ -56,6 +63,33 @@ const Settings = () => {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+  };
+
+  const handleImageUpload = async (e, field) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    setLoading(true);
+    try {
+      const resp = await apiRequest({
+        method: "POST",
+        url: "/shops/upload/image",
+        data: formData,
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      if (resp && resp.url) {
+        setForm((prev) => ({ ...prev, [field]: resp.url }));
+        setMessage({ text: `${field === 'logo' ? 'Logo' : 'Cover Image'} uploaded successfully!`, type: "success" });
+      }
+    } catch (err) {
+      setMessage({ text: "Failed to upload image.", type: "danger" });
+    } finally {
+      setLoading(false);
+      setTimeout(() => setMessage({ text: "", type: "" }), 3000);
+    }
   };
 
   // Update handles PUT (assuming /shops/{id} exists)
@@ -179,6 +213,38 @@ const Settings = () => {
                           required
                         />
                       </div>
+                    </div>
+
+                    <h5 className="fw-bold mb-4 mt-5 d-flex align-items-center">
+                      <ImageIcon size={20} className="me-2 text-primary" /> Branding & Images
+                    </h5>
+
+                    <div className="mb-4 bg-light p-4 rounded-4">
+                      <label className="form-label fw-semibold text-secondary mb-3 d-block">Shop Logo</label>
+                      <div className="d-flex mb-3 gap-2">
+                        <button type="button" className={`btn btn-sm ${uploadMode.logo === 'link' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setUploadMode(prev => ({ ...prev, logo: 'link' }))}><LinkIcon size={14} className="me-1" /> Link</button>
+                        <button type="button" className={`btn shadow-sm btn-lg w-100 rounded-pill fw-semibold mt-2 ${uploadMode.logo === 'upload' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setUploadMode(prev => ({ ...prev, logo: 'upload' }))}><Upload size={14} className="me-1" /> Upload</button>
+                      </div>
+                      {uploadMode.logo === 'link' ? (
+                        <input type="text" name="logo" className="form-control bg-white border-0" placeholder="https://example.com/logo.png" value={form.logo} onChange={handleChange} />
+                      ) : (
+                        <input type="file" accept="image/*" className="form-control bg-white border-0" onChange={(e) => handleImageUpload(e, 'logo')} />
+                      )}
+                      {form.logo && <div className="mt-3"><img src={form.logo.startsWith('/') ? `http://localhost:8000${form.logo}` : form.logo} alt="Logo Preview" className="rounded shadow-sm bg-white" style={{ height: "60px", width: "60px", objectFit: "contain" }} /></div>}
+                    </div>
+
+                    <div className="mb-4 bg-light p-4 rounded-4">
+                      <label className="form-label fw-semibold text-secondary mb-3 d-block">Cover Image</label>
+                      <div className="d-flex mb-3 gap-2">
+                        <button type="button" className={`btn btn-sm ${uploadMode.cover === 'link' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setUploadMode(prev => ({ ...prev, cover: 'link' }))}><LinkIcon size={14} className="me-1" /> Link</button>
+                        <button type="button" className={`btn btn-sm ${uploadMode.cover === 'upload' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setUploadMode(prev => ({ ...prev, cover: 'upload' }))}><Upload size={14} className="me-1" /> Upload</button>
+                      </div>
+                      {uploadMode.cover === 'link' ? (
+                        <input type="text" name="cover_image" className="form-control bg-white border-0" placeholder="https://example.com/cover.png" value={form.cover_image} onChange={handleChange} />
+                      ) : (
+                        <input type="file" accept="image/*" className="form-control bg-white border-0" onChange={(e) => handleImageUpload(e, 'cover_image')} />
+                      )}
+                      {form.cover_image && <div className="mt-3 w-100 overflow-hidden rounded shadow-sm bg-white" style={{ height: "120px" }}><img src={form.cover_image.startsWith('/') ? `http://localhost:8000${form.cover_image}` : form.cover_image} alt="Cover Preview" className="w-100 h-100" style={{ objectFit: "cover" }} /></div>}
                     </div>
 
                     <h5 className="fw-bold mb-4 mt-5 d-flex align-items-center">

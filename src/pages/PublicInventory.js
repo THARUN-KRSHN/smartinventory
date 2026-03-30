@@ -92,11 +92,17 @@ const PublicInventory = () => {
 
         {/* Abstract Background for Hero */}
         <div className="position-absolute w-100 h-100 z-0 overflow-hidden">
-          <div className="w-100 h-100 bg-secondary position-relative">
-            {/* Simulate a dynamic cinematic poster visually using massive blurred shapes */}
-            <div className="position-absolute rounded-circle blur-3xl bg-primary opacity-25" style={{ width: "800px", height: "800px", top: "-20%", left: "-10%" }}></div>
-            <div className="position-absolute rounded-circle blur-3xl bg-danger opacity-25" style={{ width: "600px", height: "600px", bottom: "-10%", right: "-10%" }}></div>
-            <div className="position-absolute rounded-circle blur-3xl text-warning bg-warning opacity-25" style={{ width: "500px", height: "500px", top: "20%", left: "40%" }}></div>
+          <div className="w-100 h-100 position-relative" style={{ backgroundColor: "#111" }}>
+            {shopInfo.cover_image ? (
+               <img src={shopInfo.cover_image.startsWith('/') ? `http://localhost:8000${shopInfo.cover_image}` : shopInfo.cover_image} className="w-100 h-100" style={{objectFit: "cover", opacity: 0.6}} alt="Cover" />
+            ) : (
+               <>
+                 {/* Simulate a dynamic cinematic poster visually using massive blurred shapes if no cover image */}
+                 <div className="position-absolute rounded-circle blur-3xl bg-primary opacity-25" style={{ width: "800px", height: "800px", top: "-20%", left: "-10%" }}></div>
+                 <div className="position-absolute rounded-circle blur-3xl bg-danger opacity-25" style={{ width: "600px", height: "600px", bottom: "-10%", right: "-10%" }}></div>
+                 <div className="position-absolute rounded-circle blur-3xl text-warning bg-warning opacity-25" style={{ width: "500px", height: "500px", top: "20%", left: "40%" }}></div>
+               </>
+            )}
           </div>
           {/* Dark Gradient Overlay replacing bottom half to fade into the list */}
           <div className="position-absolute w-100 h-100 top-0 left-0 z-1" style={{ background: "linear-gradient(to top, #000000 0%, transparent 100%)" }}></div>
@@ -110,9 +116,16 @@ const PublicInventory = () => {
             <div className="row">
               <div className="col-12 col-md-8 col-xl-6">
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-                  <span className="badge bg-light text-dark rounded-pill px-3 py-2 fw-bold text-uppercase letter-spacing-1 mb-3">
-                    {shopInfo.category || "Official Retailer"}
-                  </span>
+                  <div className="d-flex align-items-center mb-3">
+                    {shopInfo.logo && (
+                      <div className="bg-white p-1 rounded-circle me-3 shadow" style={{width: '60px', height: '60px'}}>
+                        <img src={shopInfo.logo.startsWith('/') ? `http://localhost:8000${shopInfo.logo}` : shopInfo.logo} className="w-100 h-100 rounded-circle" style={{objectFit: "contain"}} alt="Logo" />
+                      </div>
+                    )}
+                    <span className="badge bg-light text-dark rounded-pill px-3 py-2 fw-bold text-uppercase letter-spacing-1">
+                      {shopInfo.category || "Official Retailer"}
+                    </span>
+                  </div>
                   <h1 className="display-1 fw-bolder mb-3 text-uppercase" style={{ letterSpacing: "-2px", textShadow: "0 10px 30px rgba(0,0,0,0.5)", lineHeight: "1" }}>
                     {shopInfo.shop_name}
                   </h1>
@@ -184,12 +197,18 @@ const PublicInventory = () => {
                   <div className="card h-100 border-0 overflow-hidden position-relative bg-dark" style={{ borderRadius: "16px", cursor: "pointer", transition: "transform 0.3s ease", backgroundColor: "#111" }}>
 
                     {/* Product Image Placeholder / Gradient */}
-                    <div className="w-100 position-relative bg-secondary" style={{ aspectRatio: "4/3", overflow: "hidden" }}>
-                      <div className="w-100 h-100 position-absolute top-0 start-0 z-0 bg-primary opacity-25" style={{ mixBlendMode: "overlay" }}></div>
-                      <div className="w-100 h-100 position-absolute top-0 start-0 z-1" style={{ background: "linear-gradient(to top, #111 0%, transparent 100%)" }}></div>
-                      <div className="position-absolute top-50 start-50 translate-middle z-2 opacity-10">
-                        <ShoppingBag size={64} className="text-white" />
-                      </div>
+                    <div className="w-100 position-relative bg-secondary overflow-hidden" style={{ aspectRatio: "4/3" }}>
+                      {product.image ? (
+                        <img src={product.image.startsWith('/') ? `http://localhost:8000${product.image}` : product.image} alt={product.product_name} className="w-100 h-100 object-fit-cover" style={{ transition: "transform 0.3s ease" }} />
+                      ) : (
+                        <>
+                          <div className="w-100 h-100 position-absolute top-0 start-0 z-0 bg-primary opacity-25" style={{ mixBlendMode: "overlay" }}></div>
+                          <div className="w-100 h-100 position-absolute top-0 start-0 z-1" style={{ background: "linear-gradient(to top, #111 0%, transparent 100%)" }}></div>
+                          <div className="position-absolute top-50 start-50 translate-middle z-2 opacity-10">
+                            <ShoppingBag size={64} className="text-white" />
+                          </div>
+                        </>
+                      )}
                     </div>
 
                     <div className="card-body position-relative z-2 p-4 pt-1 d-flex flex-column text-white">
