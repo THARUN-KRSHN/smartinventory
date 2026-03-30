@@ -96,12 +96,7 @@ const PublicInventory = () => {
             {shopInfo.cover_image ? (
                <img src={shopInfo.cover_image.startsWith('/') ? `http://localhost:8000${shopInfo.cover_image}` : shopInfo.cover_image} className="w-100 h-100" style={{objectFit: "cover", opacity: 0.35}} alt="Cover" />
             ) : (
-               <>
-                 {/* Simulate a dynamic cinematic poster visually using massive blurred shapes if no cover image */}
-                 <div className="position-absolute rounded-circle blur-3xl bg-primary opacity-25" style={{ width: "800px", height: "800px", top: "-20%", left: "-10%" }}></div>
-                 <div className="position-absolute rounded-circle blur-3xl bg-danger opacity-25" style={{ width: "600px", height: "600px", bottom: "-10%", right: "-10%" }}></div>
-                 <div className="position-absolute rounded-circle blur-3xl text-warning bg-warning opacity-25" style={{ width: "500px", height: "500px", top: "20%", left: "40%" }}></div>
-               </>
+               <div className="position-absolute w-100 h-100 bg-dark z-0"></div>
             )}
           </div>
           {/* Dark Gradient Overlay replacing bottom half to fade into the list */}

@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { apiRequest } from "../api/api";
-import { Plus, Edit2, Trash2, Package, AlertOctagon, Upload, Link as LinkIcon, Image as ImageIcon } from "lucide-react";
+import { Plus, Edit2, Trash2, Package, AlertOctagon, Upload, Link as LinkIcon, Image as ImageIcon, FileUp, Download } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Papa from "papaparse";
 
 const getRole = () => {
   const role = localStorage.getItem("role") || localStorage.getItem("userRole");
@@ -172,6 +173,64 @@ const Inventory = () => {
     }
   };
 
+  const downloadTemplate = () => {
+    const csvContent = "data:text/csv;charset=utf-8,product_name,description,price,quantity,threshold\nSample Product,A good product,99.99,10,5\n";
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "inventory_template.csv");
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setIsSubmitting(true);
+    setErrorMessage("");
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: async (results) => {
+        const payload = results.data.map(row => ({
+          product_name: row.product_name,
+          description: row.description || "",
+          price: Number(row.price) || 0,
+          quantity: Number(row.quantity) || 0,
+          threshold: Number(row.threshold) || 5,
+          image: null
+        })).filter(item => item.product_name);
+
+        if (payload.length === 0) {
+           setErrorMessage("No valid products found in CSV. Please check the template.");
+           setIsSubmitting(false);
+           return;
+        }
+
+        try {
+          await apiRequest({
+            method: "POST",
+            url: "/inventory/bulk",
+            data: payload,
+          });
+          fetchProducts();
+        } catch (error) {
+          setErrorMessage("Failed to upload bulk products.");
+        } finally {
+          setIsSubmitting(false);
+          e.target.value = null;
+        }
+      },
+      error: () => {
+        setErrorMessage("Error parsing CSV file.");
+        setIsSubmitting(false);
+      }
+    });
+  };
+
   return (
     <div className="d-flex flex-column h-100 position-relative">
       {/* Low Stock Toast Notifications */}
@@ -192,14 +251,27 @@ const Inventory = () => {
         )}
       </AnimatePresence>
 
-      <div className="d-flex justify-content-between align-items-center mb-4 mt-2">
+      <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 mt-2 gap-3">
         <div>
           <h2 className="display-6 fw-bold mb-0" style={{ letterSpacing: "-1px" }}>Inventory</h2>
-          <p className="text-secondary mt-1">Manage and track your products.</p>
+          <p className="text-secondary mt-1 mb-0">Manage and track your products.</p>
         </div>
-        <button type="button" className="btn  rounded-pill px-4 fw-medium shadow-sm d-flex align-items-center" onClick={openAddModal}>
-          <Plus size={18} className="me-2" /> Add Product
-        </button>
+        <div className="d-flex gap-2 flex-wrap">
+          {isAdmin && (
+            <>
+               <button type="button" className="btn btn-light border rounded-pill px-3 fw-medium shadow-sm d-flex align-items-center" onClick={downloadTemplate}>
+                 <Download size={16} className="me-2" /> Template
+               </button>
+               <label className="btn btn-light border rounded-pill px-3 fw-medium shadow-sm d-flex align-items-center mb-0" style={{cursor: "pointer"}}>
+                 <FileUp size={16} className="me-2 text-primary" /> {isSubmitting ? "..." : "Import CSV"}
+                 <input type="file" accept=".csv" className="d-none" onChange={handleFileUpload} disabled={isSubmitting} />
+               </label>
+            </>
+          )}
+          <button type="button" className="btn btn-dark rounded-pill px-4 fw-medium shadow-sm d-flex align-items-center" onClick={openAddModal}>
+            <Plus size={18} className="me-2" /> Add Product
+          </button>
+        </div>
       </div>
 
       {errorMessage && <div className="alert alert-danger shadow-sm border-0 rounded-4">{errorMessage}</div>}

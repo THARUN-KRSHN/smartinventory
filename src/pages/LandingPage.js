@@ -385,11 +385,11 @@ const LandingPage = () => {
                   <div className="rounded-card card h-100 shadow-sm border-0">
                     <div className="card-body p-0 d-flex flex-column text-center position-relative">
                       {/* Cover Image Header */}
-                      <div className="w-100 bg-secondary" style={{height: "100px", borderTopLeftRadius: "var(--bs-card-border-radius, 1rem)", borderTopRightRadius: "var(--bs-card-border-radius, 1rem)", overflow: "hidden"}}>
+                      <div className="w-100 bg-black" style={{height: "100px", borderTopLeftRadius: "var(--bs-card-border-radius, 1rem)", borderTopRightRadius: "var(--bs-card-border-radius, 1rem)", overflow: "hidden"}}>
                         {shop.cover_image ? (
-                          <img src={shop.cover_image.startsWith('/') ? `http://localhost:8000${shop.cover_image}` : shop.cover_image} alt="cover" className="w-100 h-100" style={{objectFit: "cover", opacity: 0.9}} />
+                          <img src={shop.cover_image.startsWith('/') ? `http://localhost:8000${shop.cover_image}` : shop.cover_image} alt="cover" className="w-100 h-100" style={{objectFit: "cover", opacity: 0.5}} />
                         ) : (
-                          <div className="w-100 h-100 bg-primary opacity-25"></div>
+                          <div className="w-100 h-100 bg-dark"></div>
                         )}
                       </div>
                       
