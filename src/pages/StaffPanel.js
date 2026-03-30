@@ -12,67 +12,122 @@ const getRole = () => {
   return role ? role.toLowerCase() : "";
 };
 
-const generatePDF = (saleData, shopNameFromState) => {
-  const doc = new jsPDF();
-  const shopName =
-    shopNameFromState || localStorage.getItem("shop_name") || "Smart Inventory Shop";
-  const shopLogo =
-    saleData?.shop_logo ||
-    saleData?.shop?.logo ||
-    localStorage.getItem("shop_logo") ||
-    "";
+const generatePDF = async (saleData, shopNameFromState) => {
+  const getBase64ImageFromUrl = async (imageUrl) => {
+    try {
+      const fullUrl = imageUrl.startsWith('/') ? `http://localhost:8000${imageUrl}` : imageUrl;
+      const res = await fetch(fullUrl);
+      const blob = await res.blob();
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
+      });
+    } catch(e) { return null; }
+  };
+
+  const shopName = shopNameFromState || localStorage.getItem("shop_name") || "Smart Inventory Shop";
+  const shopLogoUrl = saleData?.shop_logo || saleData?.shop?.logo || localStorage.getItem("shop_logo") || "";
   const saleId = saleData?.sale_id ?? "N/A";
-  const saleDate = saleData?.date
-    ? new Date(saleData.date).toLocaleString()
-    : new Date().toLocaleString();
+  const saleDate = saleData?.date ? new Date(saleData.date).toLocaleString() : new Date().toLocaleString();
   const items = Array.isArray(saleData?.items) ? saleData.items : [];
   const totalAmount = Number(saleData?.total_amount || 0);
 
-  // Render logo only when a data URL/base64 image is available.
-  if (typeof shopLogo === "string" && shopLogo.startsWith("data:image/")) {
-    try {
-      doc.addImage(shopLogo, "PNG", 14, 12, 22, 22);
-    } catch (_error) {
-      // Ignore invalid image formats and continue PDF generation.
+  const printHeight = Math.max(140, 100 + (items.length * 9));
+  const doc = new jsPDF({
+     orientation: "portrait",
+     unit: "mm",
+     format: [80, printHeight]
+  });
+
+  let currentY = 10;
+  const pageWidth = 80;
+  const rightMargin = pageWidth - 5;
+
+  if (shopLogoUrl) {
+    const base64Logo = await getBase64ImageFromUrl(shopLogoUrl);
+    if (base64Logo) {
+      doc.addImage(base64Logo, "PNG", pageWidth/2 - 10, currentY, 20, 20);
+      currentY += 24;
     }
   }
 
-  doc.setFontSize(18);
-  doc.text("Invoice", 42, 20);
   doc.setFontSize(14);
-  doc.text(shopName, 42, 28);
+  doc.setFont("helvetica", "bold");
+  doc.text("CASH RECEIPT", pageWidth / 2, currentY, { align: "center" });
+  currentY += 8;
+  
+  doc.setLineWidth(0.3);
+  doc.line(5, currentY, rightMargin, currentY);
+  currentY += 5;
+  
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "bold");
+  doc.text(shopName.substring(0, 30), pageWidth / 2, currentY, { align: "center" });
+  currentY += 6;
 
-  doc.setFontSize(12);
-  doc.text(`Date/Time: ${saleDate}`, 14, 44);
-  doc.text(`Invoice ID: ${saleId}`, 14, 52);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  doc.text(`Date: ${saleDate.split(',')[0]}`, 5, currentY);
+  currentY += 5;
+  doc.text(`Manager: Staff`, 5, currentY);
+  currentY += 6;
+  
+  doc.line(5, currentY, rightMargin, currentY);
+  currentY += 5;
+  
+  doc.setFont("helvetica", "bold");
+  doc.text("Description", 5, currentY);
+  doc.text("Price", 55, currentY, { align: "right" });
+  currentY += 5;
 
-  const tableRows = items.map((item) => {
-    const qty = Number(item.quantity || 0);
-    const price = Number(item.price || 0);
-    const subtotal = qty * price;
-    return [
-      String(item.name || item.product_name || "-"),
-      String(qty),
-      `₹${price.toFixed(2)}`,
-      `₹${subtotal.toFixed(2)}`,
-    ];
+  doc.setFont("helvetica", "normal");
+  items.forEach(item => {
+      let nameStr = item.product_name || item.name || "-";
+      if (nameStr.length > 20) nameStr = nameStr.substring(0, 20) + "..";
+      
+      doc.text(nameStr, 5, currentY);
+      currentY += 4;
+      
+      const priceText = parseFloat(item.price || 0).toFixed(2);
+      const totalText = parseFloat(item.quantity * item.price).toFixed(2);
+      
+      doc.text(`${item.quantity} x ${priceText}`, 10, currentY);
+      doc.text(totalText, 75, currentY, { align: "right" });
+      
+      currentY += 5;
   });
-
-  autoTable(doc, {
-    startY: 62,
-    head: [["Product", "Qty", "Price", "Subtotal"]],
-    body: tableRows,
-    styles: { fontSize: 10 },
-    headStyles: { fillColor: [33, 37, 41] },
-  });
-
-  const finalY = doc.lastAutoTable?.finalY || 56;
-  doc.setFont(undefined, "bold");
-  doc.line(14, finalY + 6, 196, finalY + 6);
-  doc.setFontSize(14);
-  doc.text(`Total Amount: ₹${totalAmount.toFixed(2)}`, 196, finalY + 16, { align: "right" });
-
-  doc.save(`Invoice_${saleId}.pdf`);
+  
+  doc.line(5, currentY, rightMargin, currentY);
+  currentY += 5;
+  
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "bold");
+  doc.text("Total:", 35, currentY);
+  doc.text(`Rs. ${totalAmount.toFixed(2)}`, 75, currentY, { align: "right" });
+  currentY += 10;
+  
+  // QR Code Box Placeholder
+  doc.setFillColor(0, 0, 0);
+  doc.rect(pageWidth / 2 - 12, currentY, 24, 24, 'F');
+  doc.setFillColor(255, 255, 255);
+  doc.rect(pageWidth / 2 - 8, currentY + 4, 16, 16, 'F');
+  doc.setFillColor(0, 0, 0);
+  doc.rect(pageWidth / 2 - 4, currentY + 8, 8, 8, 'F');
+  currentY += 28;
+  
+  doc.setFontSize(7);
+  doc.setFont("helvetica", "normal");
+  doc.text(`#${saleId}`, pageWidth / 2, currentY, { align: "center" });
+  currentY += 8;
+  
+  doc.line(5, currentY, rightMargin, currentY);
+  currentY += 6;
+  
+  doc.setFontSize(9);
+  doc.text("Thank you for shopping!", pageWidth / 2, currentY, { align: "center" });
+  
+  doc.save(`${saleId}.pdf`);
 };
 
 const StaffPanel = () => {

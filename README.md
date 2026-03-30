@@ -1,70 +1,71 @@
-# Getting Started with Create React App
+# Smart Inventory - Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is the frontend application for the **Smart Multi-Tenant Inventory & Billing System**. It provides a sleek, modern, and responsive interface for shop owners, staff members, and public customers to interact with the platform.
 
-## Available Scripts
+## 🚀 Features
 
-In the project directory, you can run:
+### For Shop Owners & Admins
+- **Multi-Tenant Architecture:** Manage your unique shop's catalog and settings independently.
+- **Dashboard Analytics:** Visual summary of sales, revenue, top products, and low stock alerts.
+- **Inventory Management:** Add, edit, and delete products. Set stock tracking thresholds and upload product images.
+- **Billing System:** Generate invoices, manage quantities at checkout, and handle real-time sales transactions.
+- **Staff Management:** Create and manage staff accounts with restricted access.
+- **Shop Branding:** Customize the public view by configuring your Shop Logo and Cover Banner.
 
-### `npm start`
+### For Staff
+- **Restricted Access View:** Dedicated login and interface limited to Billing and Inventory viewing/updating, protecting sensitive dashboard and staff-management settings.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### For Public Customers
+- **Public Storefronts:** A beautifully styled landing page showcasing all platform shops.
+- **Live Catalogs:** Customers can visit any shop's unique URL to view live inventory and stock availability statuses.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🛠️ Technology Stack
 
-### `npm test`
+- **Framework:** [React (Create React App)](https://react.dev/)
+- **Routing:** [React Router v6](https://reactrouter.com/)
+- **Styling:** [Bootstrap 5](https://getbootstrap.com/) & Custom Vanilla CSS
+- **Animations:** [Framer Motion](https://www.framer.com/motion/)
+- **Icons:** [Lucide React](https://lucide.dev/)
+- **Network & API:** [Axios](https://axios-http.com/)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 📦 Getting Started
 
-### `npm run build`
+### Prerequisites
+- [Node.js](https://nodejs.org/) (v16+)
+- Make sure the Backend API (FastAPI) is running natively either locally or on a deployed server.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Installation
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1. Navigate to the frontend directory:
+   ```bash
+   cd smartinventory
+   ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+2. Install package dependencies:
+   ```bash
+   npm install
+   ```
 
-### `npm run eject`
+3. Configure Environment Variables:
+   Create a `.env` file in the root of the frontend folder (`smartinventory/.env`) and define your backend API URL. If developing locally:
+   ```env
+   REACT_APP_API_URL=http://localhost:8000
+   ```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+4. Start the local development server:
+   ```bash
+   npm start
+   ```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+The app will launch in your browser automatically, typically at `http://localhost:3000`.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 🌐 Deployment
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+This application is ready to be deployed on platforms like **Vercel** or **Netlify**. 
+A `vercel.json` configuration file is already provided to handle client-side routing rewrites for Vercel.
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**Steps for Vercel:**
+1. Push your code to GitHub.
+2. Import the `smartinventory` folder into a new Vercel project.
+3. In the Vercel project settings, set the Environment Variable `REACT_APP_API_URL` to point to your deployed backend URL.
+4. Deploy!

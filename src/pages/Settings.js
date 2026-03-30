@@ -222,8 +222,8 @@ const Settings = () => {
                     <div className="mb-4 bg-light p-4 rounded-4">
                       <label className="form-label fw-semibold text-secondary mb-3 d-block">Shop Logo</label>
                       <div className="d-flex mb-3 gap-2">
-                        <button type="button" className={`btn btn-sm ${uploadMode.logo === 'link' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setUploadMode(prev => ({ ...prev, logo: 'link' }))}><LinkIcon size={14} className="me-1" /> Link</button>
-                        <button type="button" className={`btn shadow-sm btn-lg w-100 rounded-pill fw-semibold mt-2 ${uploadMode.logo === 'upload' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setUploadMode(prev => ({ ...prev, logo: 'upload' }))}><Upload size={14} className="me-1" /> Upload</button>
+                        <button type="button" className="btn  rounded-pill px-4 shadow-sm" onClick={() => setUploadMode(prev => ({ ...prev, logo: 'link' }))}><LinkIcon size={14} className="me-1" /> Link</button>
+                        <button type="button" className="btn  rounded-pill px-4 shadow-sm" onClick={() => setUploadMode(prev => ({ ...prev, logo: 'upload' }))}><Upload size={14} className="me-1" /> Upload</button>
                       </div>
                       {uploadMode.logo === 'link' ? (
                         <input type="text" name="logo" className="form-control bg-white border-0" placeholder="https://example.com/logo.png" value={form.logo} onChange={handleChange} />
@@ -236,8 +236,8 @@ const Settings = () => {
                     <div className="mb-4 bg-light p-4 rounded-4">
                       <label className="form-label fw-semibold text-secondary mb-3 d-block">Cover Image</label>
                       <div className="d-flex mb-3 gap-2">
-                        <button type="button" className={`btn btn-sm ${uploadMode.cover === 'link' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setUploadMode(prev => ({ ...prev, cover: 'link' }))}><LinkIcon size={14} className="me-1" /> Link</button>
-                        <button type="button" className={`btn btn-sm ${uploadMode.cover === 'upload' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setUploadMode(prev => ({ ...prev, cover: 'upload' }))}><Upload size={14} className="me-1" /> Upload</button>
+                        <button type="button" className="btn  rounded-pill px-4 shadow-sm" onClick={() => setUploadMode(prev => ({ ...prev, cover: 'link' }))}><LinkIcon size={14} className="me-1" /> Link</button>
+                        <button type="button" className="btn  rounded-pill px-4 shadow-sm" onClick={() => setUploadMode(prev => ({ ...prev, cover: 'upload' }))}><Upload size={14} className="me-1" /> Upload</button>
                       </div>
                       {uploadMode.cover === 'link' ? (
                         <input type="text" name="cover_image" className="form-control bg-white border-0" placeholder="https://example.com/cover.png" value={form.cover_image} onChange={handleChange} />

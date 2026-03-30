@@ -92,9 +92,9 @@ const PublicInventory = () => {
 
         {/* Abstract Background for Hero */}
         <div className="position-absolute w-100 h-100 z-0 overflow-hidden">
-          <div className="w-100 h-100 position-relative" style={{ backgroundColor: "#111" }}>
+          <div className="w-100 h-100 position-relative" style={{ backgroundColor: "#000" }}>
             {shopInfo.cover_image ? (
-               <img src={shopInfo.cover_image.startsWith('/') ? `http://localhost:8000${shopInfo.cover_image}` : shopInfo.cover_image} className="w-100 h-100" style={{objectFit: "cover", opacity: 0.6}} alt="Cover" />
+               <img src={shopInfo.cover_image.startsWith('/') ? `http://localhost:8000${shopInfo.cover_image}` : shopInfo.cover_image} className="w-100 h-100" style={{objectFit: "cover", opacity: 0.35}} alt="Cover" />
             ) : (
                <>
                  {/* Simulate a dynamic cinematic poster visually using massive blurred shapes if no cover image */}

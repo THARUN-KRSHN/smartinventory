@@ -21,6 +21,7 @@ const AdminLayout = ({ children }) => {
   const [setupSaving, setSetupSaving] = useState(false);
   const [userRole, setUserRole] = useState("admin");
   const [shopCategory, setShopCategory] = useState("General Store");
+  const [shopLogo, setShopLogo] = useState("");
 
   useEffect(() => {
     try {
@@ -52,6 +53,7 @@ const AdminLayout = ({ children }) => {
       if (shop) {
         setShopName(shop.shop_name);
         setShopCategory(shop.category || "General Store");
+        setShopLogo(shop.logo || "");
       }
     } catch (error) {}
   };
@@ -103,8 +105,12 @@ const AdminLayout = ({ children }) => {
     <div className="d-flex flex-column h-100 p-4" style={{ width: "260px", backgroundColor: "#ffffff", borderRight: "1px solid #f0f0f0" }}>
       {/* Brand */}
       <div className="d-flex align-items-center mb-5 mt-2">
-        <div className="bg-warning text-dark p-2 rounded-3 me-3 d-flex align-items-center justify-content-center shadow-sm" style={{ width: "45px", height: "45px" }}>
-          <Store size={24} />
+        <div className="bg-white border text-dark p-1 rounded-3 me-3 d-flex align-items-center justify-content-center shadow-sm overflow-hidden" style={{ width: "45px", height: "45px" }}>
+          {shopLogo ? (
+            <img src={shopLogo.startsWith('/') ? `http://localhost:8000${shopLogo}` : shopLogo} alt="Logo" className="w-100 h-100" style={{objectFit: "contain"}} />
+          ) : (
+            <Store size={24} className="text-warning" />
+          )}
         </div>
         <div>
           <h5 className="mb-0 fw-bold text-truncate" style={{ maxWidth: "160px" }}>{shopName}</h5>
@@ -215,8 +221,12 @@ const AdminLayout = ({ children }) => {
         {/* Mobile Top Header */}
         <div className="d-lg-none bg-white border-bottom p-3 sticky-top z-2 shadow-sm">
           <div className="d-flex align-items-center">
-            <div className="bg-warning text-dark p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style={{ width: "40px", height: "40px" }}>
-              <Store size={20} />
+            <div className="bg-white border text-dark p-1 rounded-3 me-3 d-flex align-items-center justify-content-center overflow-hidden" style={{ width: "40px", height: "40px" }}>
+              {shopLogo ? (
+                <img src={shopLogo.startsWith('/') ? `http://localhost:8000${shopLogo}` : shopLogo} alt="Logo" className="w-100 h-100" style={{objectFit: "contain"}} />
+              ) : (
+                <Store size={20} className="text-warning" />
+              )}
             </div>
             <div className="overflow-hidden">
               <h6 className="mb-0 fw-bold text-truncate">{shopName}</h6>

@@ -246,9 +246,9 @@ const Inventory = () => {
                         <motion.tr initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: index * 0.05 }} key={id} style={{ height: "64px" }}>
                           <td className="ps-4 fw-semibold d-flex align-items-center gap-3">
                             {product.image ? (
-                              <img src={product.image.startsWith('/') ? `http://localhost:8000${product.image}` : product.image} alt={product.product_name} style={{width: '32px', height: '32px', objectFit: 'cover', borderRadius: '6px'}} />
+                              <img src={product.image.startsWith('/') ? `http://localhost:8000${product.image}` : product.image} alt={product.product_name} style={{ width: '32px', height: '32px', objectFit: 'cover', borderRadius: '6px' }} />
                             ) : (
-                              <div className="bg-light rounded d-flex justify-content-center align-items-center text-muted" style={{width: '32px', height: '32px'}}>
+                              <div className="bg-light rounded d-flex justify-content-center align-items-center text-muted" style={{ width: '32px', height: '32px' }}>
                                 <Package size={16} />
                               </div>
                             )}
@@ -360,19 +360,19 @@ const Inventory = () => {
                       <label className="form-label text-secondary fw-semibold small">Description</label>
                       <textarea name="description" className="form-control bg-light border-0 py-2 px-3" rows="2" value={form.description} onChange={handleChange} disabled={isSubmitting} />
                     </div>
-                    
+
                     <div className="mb-3 bg-light p-3 rounded-4">
                       <label className="form-label text-secondary fw-semibold small d-block mb-2">Product Image</label>
                       <div className="d-flex mb-3 gap-2">
-                        <button type="button" className={`btn btn-sm ${uploadMode === 'link' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setUploadMode('link')}><LinkIcon size={14} className="me-1"/> Link</button>
-                        <button type="button" className={`btn btn-sm ${uploadMode === 'upload' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setUploadMode('upload')}><Upload size={14} className="me-1"/> Upload</button>
+                        <button type="button" className="btn  rounded-pill px-4 shadow-sm" onClick={() => setUploadMode('link')}><LinkIcon size={14} className="me-1" /> Link</button>
+                        <button type="button" className="btn  rounded-pill px-4 shadow-sm" onClick={() => setUploadMode('upload')}><Upload size={14} className="me-1" /> Upload</button>
                       </div>
                       {uploadMode === 'link' ? (
                         <input type="text" name="image" className="form-control bg-white border-0" placeholder="https://example.com/product.png" value={form.image} onChange={handleChange} disabled={isSubmitting} />
                       ) : (
-                         <input type="file" accept="image/*" className="form-control bg-white border-0" onChange={handleImageUpload} disabled={isSubmitting} />
+                        <input type="file" accept="image/*" className="form-control bg-white border-0" onChange={handleImageUpload} disabled={isSubmitting} />
                       )}
-                      {form.image && <div className="mt-3"><img src={form.image.startsWith('/') ? `http://localhost:8000${form.image}` : form.image} alt="Product Preview" className="rounded shadow-sm bg-white" style={{height: "60px", width: "60px", objectFit: "contain"}} /></div>}
+                      {form.image && <div className="mt-3"><img src={form.image.startsWith('/') ? `http://localhost:8000${form.image}` : form.image} alt="Product Preview" className="rounded shadow-sm bg-white" style={{ height: "60px", width: "60px", objectFit: "contain" }} /></div>}
                     </div>
 
                     <div className="row g-3">
