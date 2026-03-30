@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { apiRequest } from "../api/api";
-import { Settings as SettingsIcon, Store, Globe, CheckCircle, User, Mail, Shield, LogOut, Upload, Link as LinkIcon, Image as ImageIcon } from "lucide-react";
+import { resolveImageUrl } from "../api/imageUrl";
+import { Store, Globe, CheckCircle, User, Mail, Shield, LogOut, Upload, Link as LinkIcon, Image as ImageIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 
@@ -230,7 +231,7 @@ const Settings = () => {
                       ) : (
                         <input type="file" accept="image/*" className="form-control bg-white border-0" onChange={(e) => handleImageUpload(e, 'logo')} />
                       )}
-                      {form.logo && <div className="mt-3"><img src={form.logo.startsWith('/') ? `http://localhost:8000${form.logo}` : form.logo} alt="Logo Preview" className="rounded shadow-sm bg-white" style={{ height: "60px", width: "60px", objectFit: "contain" }} /></div>}
+                      {form.logo && <div className="mt-3"><img src={resolveImageUrl(form.logo)} alt="Logo Preview" className="rounded shadow-sm bg-white" style={{ height: "60px", width: "60px", objectFit: "contain" }} /></div>}
                     </div>
 
                     <div className="mb-4 bg-light p-4 rounded-4">
@@ -244,7 +245,7 @@ const Settings = () => {
                       ) : (
                         <input type="file" accept="image/*" className="form-control bg-white border-0" onChange={(e) => handleImageUpload(e, 'cover_image')} />
                       )}
-                      {form.cover_image && <div className="mt-3 w-100 overflow-hidden rounded shadow-sm bg-white" style={{ height: "120px" }}><img src={form.cover_image.startsWith('/') ? `http://localhost:8000${form.cover_image}` : form.cover_image} alt="Cover Preview" className="w-100 h-100" style={{ objectFit: "cover" }} /></div>}
+                      {form.cover_image && <div className="mt-3 w-100 overflow-hidden rounded shadow-sm bg-white" style={{ height: "120px" }}><img src={resolveImageUrl(form.cover_image)} alt="Cover Preview" className="w-100 h-100" style={{ objectFit: "cover" }} /></div>}
                     </div>
 
                     <h5 className="fw-bold mb-4 mt-5 d-flex align-items-center">

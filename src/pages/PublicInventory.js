@@ -3,7 +3,13 @@ import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Package, ShoppingBag, Tag, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const BASE_URL = "http://localhost:8000";
+const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+
+const resolveImageUrl = (path) => {
+  if (!path) return null;
+  if (path.startsWith("/")) return `${BASE_URL}${path}`;
+  return path;
+};
 
 const PublicInventory = () => {
   const { shop_name } = useParams();
@@ -94,7 +100,7 @@ const PublicInventory = () => {
         <div className="position-absolute w-100 h-100 z-0 overflow-hidden">
           <div className="w-100 h-100 position-relative" style={{ backgroundColor: "#000" }}>
             {shopInfo.cover_image ? (
-               <img src={shopInfo.cover_image.startsWith('/') ? `http://localhost:8000${shopInfo.cover_image}` : shopInfo.cover_image} className="w-100 h-100" style={{objectFit: "cover", opacity: 0.35}} alt="Cover" />
+               <img src={resolveImageUrl(shopInfo.cover_image)} className="w-100 h-100" style={{objectFit: "cover", opacity: 0.35}} alt="Cover" />
             ) : (
                <div className="position-absolute w-100 h-100 bg-dark z-0"></div>
             )}
@@ -114,7 +120,7 @@ const PublicInventory = () => {
                   <div className="d-flex align-items-center mb-3">
                     {shopInfo.logo && (
                       <div className="bg-white p-1 rounded-circle me-3 shadow" style={{width: '60px', height: '60px'}}>
-                        <img src={shopInfo.logo.startsWith('/') ? `http://localhost:8000${shopInfo.logo}` : shopInfo.logo} className="w-100 h-100 rounded-circle" style={{objectFit: "contain"}} alt="Logo" />
+                        <img src={resolveImageUrl(shopInfo.logo)} className="w-100 h-100 rounded-circle" style={{objectFit: "contain"}} alt="Logo" />
                       </div>
                     )}
                     <span className="badge bg-light text-dark rounded-pill px-3 py-2 fw-bold text-uppercase letter-spacing-1">
@@ -194,7 +200,7 @@ const PublicInventory = () => {
                     {/* Product Image Placeholder / Gradient */}
                     <div className="w-100 position-relative bg-secondary overflow-hidden" style={{ aspectRatio: "4/3" }}>
                       {product.image ? (
-                        <img src={product.image.startsWith('/') ? `http://localhost:8000${product.image}` : product.image} alt={product.product_name} className="w-100 h-100 object-fit-cover" style={{ transition: "transform 0.3s ease" }} />
+                        <img src={resolveImageUrl(product.image)} alt={product.product_name} className="w-100 h-100 object-fit-cover" style={{ transition: "transform 0.3s ease" }} />
                       ) : (
                         <>
                           <div className="w-100 h-100 position-absolute top-0 start-0 z-0 bg-primary opacity-25" style={{ mixBlendMode: "overlay" }}></div>

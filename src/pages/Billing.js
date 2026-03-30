@@ -3,7 +3,7 @@ import { apiRequest } from "../api/api";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Minus, Trash2, User, Phone, Receipt, FileText, X, ShoppingBag, Package } from "lucide-react";
 import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
+// jspdf-autotable removed (unused)
 
 const Billing = () => {
    const [products, setProducts] = useState([]);
@@ -163,7 +163,8 @@ const Billing = () => {
    const generatePDF = async (data) => {
       const getBase64ImageFromUrl = async (imageUrl) => {
          try {
-           const fullUrl = imageUrl.startsWith('/') ? `http://localhost:8000${imageUrl}` : imageUrl;
+           const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:8000";
+           const fullUrl = imageUrl.startsWith('/') ? `${API_BASE}${imageUrl}` : imageUrl;
            const res = await fetch(fullUrl);
            const blob = await res.blob();
            return new Promise((resolve) => {

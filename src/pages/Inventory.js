@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { apiRequest } from "../api/api";
-import { Plus, Edit2, Trash2, Package, AlertOctagon, Upload, Link as LinkIcon, Image as ImageIcon, FileUp, Download } from "lucide-react";
+import { resolveImageUrl } from "../api/imageUrl";
+import { Plus, Edit2, Trash2, Package, AlertOctagon, Upload, Link as LinkIcon, FileUp, Download } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Papa from "papaparse";
 
@@ -318,7 +319,7 @@ const Inventory = () => {
                         <motion.tr initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: index * 0.05 }} key={id} style={{ height: "64px" }}>
                           <td className="ps-4 fw-semibold d-flex align-items-center gap-3">
                             {product.image ? (
-                              <img src={product.image.startsWith('/') ? `http://localhost:8000${product.image}` : product.image} alt={product.product_name} style={{ width: '32px', height: '32px', objectFit: 'cover', borderRadius: '6px' }} />
+                              <img src={resolveImageUrl(product.image)} alt={product.product_name} style={{ width: '32px', height: '32px', objectFit: 'cover', borderRadius: '6px' }} />
                             ) : (
                               <div className="bg-light rounded d-flex justify-content-center align-items-center text-muted" style={{ width: '32px', height: '32px' }}>
                                 <Package size={16} />
@@ -444,7 +445,7 @@ const Inventory = () => {
                       ) : (
                         <input type="file" accept="image/*" className="form-control bg-white border-0" onChange={handleImageUpload} disabled={isSubmitting} />
                       )}
-                      {form.image && <div className="mt-3"><img src={form.image.startsWith('/') ? `http://localhost:8000${form.image}` : form.image} alt="Product Preview" className="rounded shadow-sm bg-white" style={{ height: "60px", width: "60px", objectFit: "contain" }} /></div>}
+                      {form.image && <div className="mt-3"><img src={resolveImageUrl(form.image)} alt="Product Preview" className="rounded shadow-sm bg-white" style={{ height: "60px", width: "60px", objectFit: "contain" }} /></div>}
                     </div>
 
                     <div className="row g-3">

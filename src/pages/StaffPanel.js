@@ -15,7 +15,7 @@ const getRole = () => {
 const generatePDF = async (saleData, shopNameFromState) => {
   const getBase64ImageFromUrl = async (imageUrl) => {
     try {
-      const fullUrl = imageUrl.startsWith('/') ? `http://localhost:8000${imageUrl}` : imageUrl;
+      const fullUrl = imageUrl.startsWith('/') ? `${process.env.REACT_APP_API_URL || "http://localhost:8000"}${imageUrl}` : imageUrl;
       const res = await fetch(fullUrl);
       const blob = await res.blob();
       return new Promise((resolve) => {

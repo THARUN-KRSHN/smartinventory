@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { apiRequest } from "../api/api";
+import { resolveImageUrl } from "../api/imageUrl";
 import {
   LayoutDashboard,
   Package,
@@ -107,7 +108,7 @@ const AdminLayout = ({ children }) => {
       <div className="d-flex align-items-center mb-5 mt-2">
         <div className="bg-white border text-dark p-1 rounded-3 me-3 d-flex align-items-center justify-content-center shadow-sm overflow-hidden" style={{ width: "45px", height: "45px" }}>
           {shopLogo ? (
-            <img src={shopLogo.startsWith('/') ? `http://localhost:8000${shopLogo}` : shopLogo} alt="Logo" className="w-100 h-100" style={{objectFit: "contain"}} />
+            <img src={resolveImageUrl(shopLogo)} alt="Logo" className="w-100 h-100" style={{objectFit: "contain"}} />
           ) : (
             <Store size={24} className="text-warning" />
           )}
@@ -223,7 +224,7 @@ const AdminLayout = ({ children }) => {
           <div className="d-flex align-items-center">
             <div className="bg-white border text-dark p-1 rounded-3 me-3 d-flex align-items-center justify-content-center overflow-hidden" style={{ width: "40px", height: "40px" }}>
               {shopLogo ? (
-                <img src={shopLogo.startsWith('/') ? `http://localhost:8000${shopLogo}` : shopLogo} alt="Logo" className="w-100 h-100" style={{objectFit: "contain"}} />
+                <img src={resolveImageUrl(shopLogo)} alt="Logo" className="w-100 h-100" style={{objectFit: "contain"}} />
               ) : (
                 <Store size={20} className="text-warning" />
               )}

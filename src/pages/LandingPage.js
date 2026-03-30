@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { apiRequest } from "../api/api";
+import { resolveImageUrl } from "../api/imageUrl";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
@@ -387,7 +388,7 @@ const LandingPage = () => {
                       {/* Cover Image Header */}
                       <div className="w-100 bg-black" style={{height: "100px", borderTopLeftRadius: "var(--bs-card-border-radius, 1rem)", borderTopRightRadius: "var(--bs-card-border-radius, 1rem)", overflow: "hidden"}}>
                         {shop.cover_image ? (
-                          <img src={shop.cover_image.startsWith('/') ? `http://localhost:8000${shop.cover_image}` : shop.cover_image} alt="cover" className="w-100 h-100" style={{objectFit: "cover", opacity: 0.5}} />
+                          <img src={resolveImageUrl(shop.cover_image)} alt="cover" className="w-100 h-100" style={{objectFit: "cover", opacity: 0.5}} />
                         ) : (
                           <div className="w-100 h-100 bg-dark"></div>
                         )}
@@ -396,7 +397,7 @@ const LandingPage = () => {
                       {/* Logo (overlapping) */}
                       <div className="mx-auto bg-white p-1 rounded-circle shadow-sm d-flex justify-content-center align-items-center position-absolute start-50 translate-middle-x" style={{ width: "70px", height: "70px", top: "65px", zIndex: 2 }}>
                         {shop.logo ? (
-                           <img src={shop.logo.startsWith('/') ? `http://localhost:8000${shop.logo}` : shop.logo} alt={shop.shop_name} className="w-100 h-100 overflow-hidden" style={{objectFit: "contain", borderRadius: "50%"}} />
+                           <img src={resolveImageUrl(shop.logo)} alt={shop.shop_name} className="w-100 h-100 overflow-hidden" style={{objectFit: "contain", borderRadius: "50%"}} />
                         ) : (
                            <div className="bg-light w-100 h-100 rounded-circle d-flex align-items-center justify-content-center"><Store size={32} className="text-primary" /></div>
                         )}
